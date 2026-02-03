@@ -29,3 +29,76 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.listing-card {
+  display: flex;
+  gap: 14px;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #fff;
+}
+
+.listing-card__image img {
+  width: 140px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #eee;
+}
+
+.listing-card__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.listing-card__meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #0b3d91;
+  color: white;
+  font-size: 12px;
+}
+
+.chip {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f3f3f3;
+  font-size: 12px;
+}
+
+.listing-card__title {
+  margin: 0;
+  font-size: 18px;
+}
+
+.listing-card__desc {
+  margin: 6px 0 10px 0;
+  color: #555;
+}
+
+.listing-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.listing-card__price {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.listing-card__date {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #777;
+}

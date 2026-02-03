@@ -1,0 +1,35 @@
+@model ETSU_Marketplace.ViewModels.ListingCardViewModel
+
+<div class="listing-card">
+    <div class="listing-card__image">
+        <img src="@(Model.ImageUrl ?? "/images/placeholder.png")" alt="@Model.Title" />
+    </div>
+
+    <div class="listing-card__body">
+        <div class="listing-card__meta">
+            <span class="badge">@Model.ListingType</span>
+
+            @if (!string.IsNullOrWhiteSpace(Model.CategoryLabel))
+            {
+                <span class="chip">@Model.CategoryLabel</span>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.ConditionLabel))
+            {
+                <span class="chip">@Model.ConditionLabel</span>
+            }
+        </div>
+
+        <h3 class="listing-card__title">@Model.Title</h3>
+        <p class="listing-card__desc">@Model.ShortDescription</p>
+
+        <div class="listing-card__footer">
+            <span class="listing-card__price">$@Model.Price</span>
+            <a class="btn btn-primary" href="@Model.DetailsUrl">View Details</a>
+        </div>
+
+        <div class="listing-card__date">
+            Posted @Model.CreatedAt.ToString("MMM d, yyyy")
+        </div>
+    </div>
+</div>
