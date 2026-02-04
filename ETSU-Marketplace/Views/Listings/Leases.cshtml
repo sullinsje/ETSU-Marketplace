@@ -1,0 +1,25 @@
+@model ETSU_Marketplace.ViewModels.HomeIndexViewModel
+@{
+    ViewData["Title"] = "Leases";
+}
+
+<section class="listings-wrap">
+    <a class="back-link" asp-controller="Home" asp-action="Index">← Back to Home</a>
+
+    <h1 class="page-title">Lease Takeovers</h1>
+    <h3 class="section-subtitle">Latest Listings</h3>
+
+    <div class="listings-row">
+        @if (Model?.LatestLeaseListings != null && Model.LatestLeaseListings.Any())
+        {
+            foreach (var listing in Model.LatestLeaseListings)
+            {
+                @await Html.PartialAsync("_ListingCard", listing)
+            }
+        }
+        else
+        {
+            <div class="empty-state">No lease takeover listings yet.</div>
+        }
+    </div>
+</section>

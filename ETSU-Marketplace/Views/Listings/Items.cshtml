@@ -1,0 +1,49 @@
+@model ETSU_Marketplace.ViewModels.HomeIndexViewModel
+@{
+    ViewData["Title"] = "Items";
+}
+
+<section class="listings-wrap">
+    <a class="back-link" asp-controller="Home" asp-action="Index">← Back to Home</a>
+
+    <h1 class="page-title">Items for Sale</h1>
+
+    @* Optional filter display *@
+    @if (ViewBag.SelectedCategory != null || ViewBag.SearchQuery != null)
+    {
+        <div class="filters-summary" style="margin: 6px 0 14px 0;">
+            @if (ViewBag.SelectedCategory != null)
+            {
+                <span style="margin-right:12px;"><strong>Category:</strong> @ViewBag.SelectedCategory</span>
+            }
+            @if (ViewBag.SearchQuery != null)
+            {
+                <span><strong>Search:</strong> @ViewBag.SearchQuery</span>
+            }
+        </div>
+    }
+
+    @* Optional: quick "clear filters" link *@
+    @if (ViewBag.SelectedCategory != null || ViewBag.SearchQuery != null)
+    {
+        <div style="margin-bottom: 14px;">
+            <a asp-controller="Listings" asp-action="Items">Clear filters</a>
+        </div>
+    }
+
+    <h3 class="section-subtitle">Latest Listings</h3>
+
+    <div class="listings-row">
+        @if (Model?.LatestItemListings != null && Model.LatestItemListings.Any())
+        {
+            foreach (var listing in Model.LatestItemListings)
+            {
+                @await Html.PartialAsync("_ListingCard", listing)
+            }
+        }
+        else
+        {
+            <div class="empty-state">No item listings found.</div>
+        }
+    </div>
+</section>
