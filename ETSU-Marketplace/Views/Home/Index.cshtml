@@ -1,8 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-<style>
 
+<style>
 .topbar{
   display:flex;
   align-items:center;
@@ -52,6 +52,8 @@
   padding: 14px 22px;
   border-radius: 14px;
   line-height: 1;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .topbar-actions .btn-dark{
@@ -65,7 +67,6 @@
   color:#111;
   border:2px solid #111;
 }
-
 
 .category-nav{
   display:flex;
@@ -82,7 +83,7 @@
   text-decoration:none;
   color:#ffffff;
   font-weight:700;
-  font-size: 24px; 
+  font-size: 24px;
 }
 
 .category-nav a.lease-link{
@@ -102,7 +103,6 @@
   display:block;
   background-size: cover;
   background-position:center;
-  text-decoration:none; /* removes blue underline */
 }
 
 .hero-overlay{
@@ -113,6 +113,7 @@
   justify-content:center;
   align-items:center;
   gap:14px;
+  z-index: 2;
 }
 
 .hero-overlay h2{
@@ -123,12 +124,23 @@
   text-shadow:0 2px 12px rgba(0,0,0,.35);
 }
 
+
 .hero-btn{
+  display:inline-block;
   background:#fff;
   color:#111;
   padding:10px 16px;
   border-radius:10px;
   font-weight:700;
+  text-decoration:none;
+
+  position: relative;
+  z-index: 3;
+  cursor:pointer;
+}
+
+.hero-btn:hover{
+  opacity: .92;
 }
 
 .hero-item{
@@ -140,7 +152,20 @@
   background-image: linear-gradient(rgba(0,0,0,.15), rgba(0,0,0,.15)),
     url("/images/LeaseImage.jpg");
 }
+
+/* IMPORTANT: allow ONLY the Shop button to receive clicks */
+.hero-overlay{
+  pointer-events: none;
+}
+
+.hero-btn{
+  pointer-events: auto;
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
+}
 </style>
+
 
 <header class="topbar">
     <div class="left-group">
@@ -154,34 +179,36 @@
     </div>
 
     <div class="topbar-actions">
-        <a class="btn btn-dark" href="#">Sell</a>
-        <a class="btn btn-outline" href="#">Log in</a>
+
+        <a class="btn btn-dark" href="/Listings/Items">Sell</a>
+
+        <a class="btn btn-outline" asp-area="Identity" asp-page="/Account/Login">Log in</a>
     </div>
 </header>
 
 <nav class="category-nav">
-    <a href="#">Textbook</a>
-    <a href="#">Clothing</a>
-    <a href="#">Vehicles</a>
-    <a href="#">Gaming</a>
-    <a href="#">Accessories</a>
-    <a href="#">Furniture</a>
-    <a href="#">Home</a>
-    <a href="#" class="lease-link">Lease</a>
+    <a href="/Listings/Items?category=Textbook">Textbook</a>
+    <a href="/Listings/Items?category=Clothing">Clothing</a>
+    <a href="/Listings/Items?category=Vehicles">Vehicles</a>
+    <a href="/Listings/Items?category=Gaming">Gaming</a>
+    <a href="/Listings/Items?category=Accessories">Accessories</a>
+    <a href="/Listings/Items?category=Furniture">Furniture</a>
+    <a href="/Listings/Items?category=Home">Home</a>
+    <a href="/Listings/Leases" class="lease-link">Lease</a>
 </nav>
 
 <section class="split-hero">
-    <a class="hero-card hero-item" href="#">
+    <div class="hero-card hero-item">
         <div class="hero-overlay">
             <h2>Item</h2>
-            <span class="hero-btn">Shop</span>
+            <a class="hero-btn" href="/Listings/Items">Shop</a>
         </div>
-    </a>
+    </div>
 
-    <a class="hero-card hero-lease" href="#">
+    <div class="hero-card hero-lease">
         <div class="hero-overlay">
             <h2>Lease</h2>
-            <span class="hero-btn">Shop</span>
+            <a class="hero-btn" href="/Listings/Leases">Shop</a>
         </div>
-    </a>
+    </div>
 </section>

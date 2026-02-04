@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using ETSU_Marketplace.Models;
 using ETSU_Marketplace.ViewModels;
 
 namespace ETSU_Marketplace.Controllers
