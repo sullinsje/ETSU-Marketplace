@@ -75,7 +75,8 @@ namespace ETSU_Marketplace.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [EmailAddress]
+            [RegularExpression(@"^[a-zA-Z0-9]+@etsu\.edu$",
+        ErrorMessage = "Please use a valid ETSU email address (e.g., username@etsu.edu).")]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
