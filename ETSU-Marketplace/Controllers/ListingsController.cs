@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using ETSU_Marketplace.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ETSU_Marketplace.Controllers
 {
+    // COMMENTED OUT FOR EASE OF TESTING 
+    // [Authorize] 
     public class ListingsController : Controller
     {
         // Sprint 1: stub data so the UI works before EF Core is wired
