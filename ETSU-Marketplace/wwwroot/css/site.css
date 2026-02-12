@@ -148,6 +148,27 @@ body {
   display: block;
 }
 
+.identity-logo {
+  height: 100px;
+  width: auto;
+}
+
+.identity-btn-dark {
+  background: #14133b;
+  color: #fff;
+  border: 1px solid #14133b;
+  opacity: 1;
+}
+
+.identity-btn-dark:hover, 
+.identity-btn-dark:focus, 
+.identity-btn-dark:active {
+  background-color: #14133b;
+  color: #fff;
+  opacity: 1;
+  box-shadow: none; 
+}
+
 .topbar-actions .btn {
   font-size: 18px;
   padding: 14px 22px;
