@@ -15,4 +15,8 @@ public class ApplicationDbContext : IdentityDbContext
     
     }
 
+    // Tables for Item and Lease Listings
+    public DbSet<ItemListing> ItemListings => Set<ItemListing>();
+    public DbSet<LeaseListing> LeaseListings => Set<LeaseListing>();
+
 }
