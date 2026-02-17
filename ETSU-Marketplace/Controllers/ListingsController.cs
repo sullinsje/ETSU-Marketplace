@@ -168,5 +168,26 @@ namespace ETSU_Marketplace.Controllers
 
             return View(vm);
         }
+    
+    
+    // GET: /Listings/Details/5?type=Item
+// GET: /Listings/Details/101?type=Lease
+public IActionResult Details(int id, string type = "Item")
+{
+    var vm = BuildSampleVm();
+
+    ListingCardViewModel? listing = null;
+
+    if (string.Equals(type, "Lease", StringComparison.OrdinalIgnoreCase))
+        listing = vm.LatestLeaseListings.FirstOrDefault(l => l.Id == id);
+    else
+        listing = vm.LatestItemListings.FirstOrDefault(l => l.Id == id);
+
+    if (listing == null)
+        return NotFound();
+
+    return View(listing);
+}
+
     }
 }
