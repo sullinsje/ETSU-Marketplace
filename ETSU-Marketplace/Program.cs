@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ETSU_Marketplace.Hubs;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +20,9 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSignalR();
+
 
 var app = builder.Build();
 
@@ -44,5 +49,8 @@ app.MapControllerRoute(
 
 // Add Razor Pages for Identity UI
 app.MapRazorPages();
+
+app.MapHub<MarketplaceHub>("/marketplaceHub");
+
 
 app.Run();
