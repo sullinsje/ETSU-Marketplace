@@ -1,0 +1,78 @@
+@model ETSU_Marketplace.ViewModels.ListingCardViewModel
+@{
+    ViewData["Title"] = "Listing Details";
+}
+
+<a asp-controller="Listings" asp-action="@(Model.ListingType == "Lease" ? "Leases" : "Items")">
+    ← Back
+</a>
+
+<h1>@Model.Title</h1>
+
+<p>@Model.ShortDescription</p>
+
+<p><strong>Price:</strong> $@Model.Price</p>
+<p><strong>Type:</strong> @Model.ListingType</p>
+<p><strong>Category:</strong> @Model.CategoryLabel</p>
+
+@if (!string.IsNullOrWhiteSpace(Model.ConditionLabel))
+{
+    <p><strong>Condition:</strong> @Model.ConditionLabel</p>
+}
+ 
+<hr />
+
+<h2>Live Chat</h2>
+
+<div id="chatLog" style="border:1px solid #ccc; padding:10px; height:250px; overflow:auto; margin-bottom:10px;"></div>
+
+<div style="display:flex; gap:8px;">
+    <input id="chatInput" style="flex:1;" placeholder="Message the seller..." />
+    <button id="sendBtn" type="button">Send</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+
+<script>
+    const listingId = @Model.Id;
+
+    function renderMsg(msg) {
+        const div = document.createElement("div");
+        const t = msg.sentAtUtc ? new Date(msg.sentAtUtc).toLocaleTimeString() : "";
+        div.textContent = (t ? `[${t}] ` : "") + (msg.sender ?? "User") + ": " + (msg.text ?? "");
+        document.getElementById("chatLog").appendChild(div);
+        document.getElementById("chatLog").scrollTop = document.getElementById("chatLog").scrollHeight;
+    }
+
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/marketplaceHub")
+        .withAutomaticReconnect()
+        .build();
+
+    connection.on("ReceiveListingMessage", (msg) => {
+        renderMsg(msg);
+    });
+
+    async function start() {
+        // Load stored chat history (if ChatController exists)
+        try {
+            const history = await fetch(`/chat/listing/${listingId}`).then(r => r.json());
+            history.forEach(renderMsg);
+        } catch (e) {
+            // ignore if you haven't added ChatController yet
+        }
+
+        await connection.start();
+        await connection.invoke("JoinListing", listingId);
+    }
+
+    document.getElementById("sendBtn").addEventListener("click", async () => {
+        const text = document.getElementById("chatInput").value.trim();
+        if (!text) return;
+
+        await connection.invoke("SendListingMessage", listingId, text);
+        document.getElementById("chatInput").value = "";
+    });
+
+    start();
+</script>
