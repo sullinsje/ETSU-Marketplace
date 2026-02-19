@@ -25,7 +25,14 @@
 
         <div class="listing-card__footer">
             <span class="listing-card__price">$@Model.Price</span>
-            <a class="btn btn-primary" href="@Model.DetailsUrl">View Details</a>
+
+            <a class="btn btn-primary"
+               asp-controller="Listings"
+               asp-action="Details"
+               asp-route-id="@Model.Id"
+               asp-route-type="@Model.ListingType">
+               View Details
+            </a>
         </div>
 
         <div class="listing-card__date">

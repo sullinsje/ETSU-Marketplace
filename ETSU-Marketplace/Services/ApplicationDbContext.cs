@@ -8,6 +8,8 @@ public class ApplicationDbContext : IdentityDbContext
     {
     }
 
+    public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

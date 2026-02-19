@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,42 +10,21 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ETSU_Marketplace.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260217182126_AddChatMessages")]
+    partial class AddChatMessages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.12");
 
-<<<<<<< HEAD
-            modelBuilder.Entity("ItemListing", b =>
-=======
             modelBuilder.Entity("ChatMessage", b =>
->>>>>>> 98fa119c93c1cf55f9231a7095616c99ac93980c
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-<<<<<<< HEAD
-                    b.Property<int>("Category")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Condition")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-=======
                     b.Property<int>("ListingId")
                         .HasColumnType("INTEGER");
 
@@ -60,55 +40,12 @@ namespace ETSU_Marketplace.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Text")
->>>>>>> 98fa119c93c1cf55f9231a7095616c99ac93980c
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-<<<<<<< HEAD
-                    b.ToTable("ItemListings");
-                });
-
-            modelBuilder.Entity("LeaseListing", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("LeaseEnd")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("LeaseStart")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("UtilitiesIncluded")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LeaseListings");
-=======
                     b.ToTable("ChatMessages");
->>>>>>> 98fa119c93c1cf55f9231a7095616c99ac93980c
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
