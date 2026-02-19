@@ -24,4 +24,33 @@ public class DbItemListingRepository : IItemListingRepository
         return newItemListing;
     }
 
+    public async Task<ItemListing?> ReadAsync(int id)
+    {
+        return await _db.ItemListings.FindAsync(id);
+    }
+
+    public async Task UpdateAsync(int oldId, ItemListing updatedItemListing)
+    {
+        var ItemListingToUpdate = await ReadAsync(oldId);
+        if (ItemListingToUpdate != null)
+        {
+            ItemListingToUpdate.Category = updatedItemListing.Category;
+            ItemListingToUpdate.Condition = updatedItemListing.Condition;
+            ItemListingToUpdate.Title = updatedItemListing.Title;
+            ItemListingToUpdate.Description = updatedItemListing.Description;
+            ItemListingToUpdate.Price = updatedItemListing.Price;
+            await _db.SaveChangesAsync();
+        }
+    }
+    
+    public async Task DeleteAsync(int id)
+    {
+        var itemListingToDelete = await ReadAsync(id);
+        if (itemListingToDelete != null)
+        {
+            _db.ItemListings.Remove(itemListingToDelete);
+            await _db.SaveChangesAsync();
+        }
+    }
+
 }

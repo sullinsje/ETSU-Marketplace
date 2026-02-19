@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ETSU_Marketplace.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using ETSU_Marketplace.Services;
 
 namespace ETSU_Marketplace.Controllers
 {
@@ -8,6 +9,13 @@ namespace ETSU_Marketplace.Controllers
     // [Authorize] 
     public class ListingsController : Controller
     {
+        private readonly IItemListingRepository _itemRepo;
+
+        public ListingsController(IItemListingRepository itemRepo)
+        {
+            _itemRepo = itemRepo;
+        }
+
         // Sprint 1: stub data so the UI works before EF Core is wired
         private HomeIndexViewModel BuildSampleVm()
         {
@@ -171,26 +179,37 @@ namespace ETSU_Marketplace.Controllers
 
             return View(vm);
         }
-    
-    
-    // GET: /Listings/Details/5?type=Item
-// GET: /Listings/Details/101?type=Lease
-public IActionResult Details(int id, string type = "Item")
-{
-    var vm = BuildSampleVm();
 
-    ListingCardViewModel? listing = null;
 
-    if (string.Equals(type, "Lease", StringComparison.OrdinalIgnoreCase))
-        listing = vm.LatestLeaseListings.FirstOrDefault(l => l.Id == id);
-    else
-        listing = vm.LatestItemListings.FirstOrDefault(l => l.Id == id);
+        // GET: /Listings/Details/5?type=Item
+        // GET: /Listings/Details/101?type=Lease
+        public IActionResult Details(int id, string type = "Item")
+        {
+            var vm = BuildSampleVm();
 
-    if (listing == null)
-        return NotFound();
+            ListingCardViewModel? listing = null;
 
-    return View(listing);
-}
+            if (string.Equals(type, "Lease", StringComparison.OrdinalIgnoreCase))
+                listing = vm.LatestLeaseListings.FirstOrDefault(l => l.Id == id);
+            else
+                listing = vm.LatestItemListings.FirstOrDefault(l => l.Id == id);
+
+            if (listing == null)
+                return NotFound();
+
+            return View(listing);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> List()
+        {
+            var items = await _itemRepo.ReadAllAsync();
+            return View(items);
+        }
 
     }
 }

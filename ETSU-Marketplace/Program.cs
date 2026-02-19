@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ETSU_Marketplace.Hubs;
+using ETSU_Marketplace.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +21,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<IItemListingRepository, DbItemListingRepository>();
+builder.Services.AddScoped<ILeaseListingRepository, DbLeaseListingRepository>();
 builder.Services.AddSignalR();
 
 
