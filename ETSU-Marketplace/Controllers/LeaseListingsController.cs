@@ -20,20 +20,21 @@ namespace ETSU_Marketplace.Controllers
         // GET: /Listings/Leases?q=apartment
         public async Task<IActionResult> Leases(string? q)
         {
-            var items = await _leaseRepo.ReadAllAsync();
+            var leases = await _leaseRepo.ReadAllAsync();
             var vms = new List<ListingCardViewModel>();
             var homeIndexVM = new HomeIndexViewModel();
-            
-            foreach (var item in items)
+
+            foreach (var lease in leases)
             {
                 vms.Add(new ListingCardViewModel
                 {
-                    Id = item.Id,
-                    Title = item.Title,
-                    ShortDescription = item.Description,
-                    Price = item.Price,
-                    CreatedAt = item.CreatedAt,
-                    ListingType = "Item"
+                    Id = lease.Id,
+                    Title = lease.Title,
+                    ShortDescription = lease.Description,
+                    Price = lease.Price,
+                    CreatedAt = lease.CreatedAt,
+                    ListingType = "Lease",
+                    ShowOwnerActions = true
                 });
             }
 
@@ -53,7 +54,7 @@ namespace ETSU_Marketplace.Controllers
 
             // Pass selected filters to the View (optional display)
             ViewBag.SearchQuery = q;
-            
+
             foreach (var v in vms)
             {
                 homeIndexVM.LatestLeaseListings.Add(v);
@@ -65,20 +66,22 @@ namespace ETSU_Marketplace.Controllers
         // GET: /Listings/Details/101?type=Lease
         public async Task<IActionResult> Details(int id)
         {
-            var item = await _leaseRepo.ReadAsync(id);
-            
-            if (item == null)
+            var lease = await _leaseRepo.ReadAsync(id);
+
+            if (lease == null)
             {
                 return NotFound();
             }
 
-            var vm = new ListingCardViewModel{
+            var vm = new ListingCardViewModel
+            {
                 Id = id,
-                Title = item.Title,
-                ShortDescription = item.Description,
-                Price = item.Price,
-                CreatedAt = item.CreatedAt,
-                ListingType = "Item"
+                Title = lease.Title,
+                ShortDescription = lease.Description,
+                Price = lease.Price,
+                CreatedAt = lease.CreatedAt,
+                ListingType = "Item",
+                ShowOwnerActions = true
             };
 
             return View(vm);
@@ -91,5 +94,46 @@ namespace ETSU_Marketplace.Controllers
             return View();
         }
 
+        [Route("Edit/{id}")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var lease = await _leaseRepo.ReadAsync(id);
+            return View(lease);
+        }
+
+        [Route("Delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var lease = await _leaseRepo.ReadAsync(id);
+            return View(lease);
+        }
+
+        [Route("Manage")]
+        public async Task<IActionResult> Manage()
+        {
+            var leases = await _leaseRepo.ReadAllAsync();
+            var vms = new List<ListingCardViewModel>();
+            var homeIndexVM = new HomeIndexViewModel();
+
+            foreach (var lease in leases)
+            {
+                vms.Add(new ListingCardViewModel
+                {
+                    Id = lease.Id,
+                    Title = lease.Title,
+                    ShortDescription = lease.Description,
+                    Price = lease.Price,
+                    CreatedAt = lease.CreatedAt,
+                    ListingType = "Lease",
+                    ShowOwnerActions = true
+                });
+            }
+
+            foreach (var v in vms)
+            {
+                homeIndexVM.LatestLeaseListings.Add(v);
+            }
+            return View(homeIndexVM);
+        }
     }
 }

@@ -38,18 +38,22 @@ public class LeaseAPIController : ControllerBase
         return Ok(leaseListing);
     }
 
-    [HttpPut("update")]
+    [HttpPost("update")]
     public async Task<IActionResult> Put([FromForm] LeaseListing lease)
     {
         await _leaseRepo.UpdateAsync(lease.Id, lease);
-        return NoContent(); // 204 as per HTTP specification
+        
+        // Redirect back to management dashboard
+        return LocalRedirect("/Listings/Leases/Manage");
     }
 
-    [HttpDelete("delete/{id}")]
+    [HttpPost("delete/{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         await _leaseRepo.DeleteAsync(id);
-        return NoContent(); // 204 as per HTTP specification
+
+        // Redirect back to management dashboard
+        return LocalRedirect("/Listings/Leases/Manage");
     }
 
 }

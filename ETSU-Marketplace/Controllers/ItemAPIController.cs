@@ -38,18 +38,22 @@ public class ItemAPIController : ControllerBase
         return Ok(itemListing);
     }
 
-    [HttpPut("update")]
+    [HttpPost("update")]
     public async Task<IActionResult> Put([FromForm] ItemListing item)
     {
         await _itemRepo.UpdateAsync(item.Id, item);
-        return NoContent(); // 204 as per HTTP specification
+        
+        // Redirect back to management dashboard
+        return LocalRedirect("/Listings/Items/Manage");
     }
 
-    [HttpDelete("delete/{id}")]
-    public async Task<IActionResult> Delete(int id)
+    [HttpPost("delete/{id}")]
+    public async Task<IActionResult> ConfirmDelete(int id)
     {
         await _itemRepo.DeleteAsync(id);
-        return NoContent(); // 204 as per HTTP specification
+
+        // Redirect back to management dashboard
+        return LocalRedirect("/Listings/Items/Manage");
     }
 
 }

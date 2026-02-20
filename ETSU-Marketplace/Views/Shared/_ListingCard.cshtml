@@ -26,13 +26,52 @@
         <div class="listing-card__footer">
             <span class="listing-card__price">$@Model.Price</span>
 
-            <a class="btn btn-primary"
-               asp-controller="ItemListings"
-               asp-action="Details"
-               asp-route-id="@Model.Id"
-               asp-route-type="@Model.ListingType">
-               View Details
-            </a>
+            <div class="listing-card__actions">
+                @if (Model.ShowOwnerActions)
+                {
+                    if (Model.ListingType == "Item")
+                    {
+                        <a asp-controller="ItemListings"           asp-action="Edit"           asp-route-id="@Model.Id"
+                               class="btn btn-sm btn-outline-primary fw-bold">
+                            Edit
+                        </a>
+
+                        <a asp-controller="ItemListings" asp-action="Delete" asp-route-id="@Model.Id"
+                               class="btn btn-sm btn-outline-danger fw-bold">
+                            Delete
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="LeaseListings" asp-action="Edit" asp-route-id="@Model.Id"
+                               class="btn btn-sm btn-outline-primary fw-bold">
+                            Edit
+                        </a>
+
+                        <a asp-controller="LeaseListings"     asp-action="Delete"        asp-route-id="@Model.Id"
+                               class="btn btn-sm btn-outline-danger fw-bold">
+                            Delete
+                        </a>
+                    }
+                }
+                else
+                {
+                    if (Model.ListingType == "Item")
+                    {
+                        <a class="btn btn-primary"          asp-controller="ItemListings"             asp-action="Details"               asp-route-id="@Model.Id"
+                               asp-route-type="@Model.ListingType">
+                            View Details
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary"               asp-controller="LeaseListings"                  asp-action="Details"   asp-route-id="@Model.Id"
+                               asp-route-type="@Model.ListingType">
+                            View Details
+                        </a>
+                    }
+                }
+            </div>
         </div>
 
         <div class="listing-card__date">

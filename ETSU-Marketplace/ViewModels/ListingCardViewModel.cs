@@ -14,6 +14,7 @@ namespace ETSU_Marketplace.ViewModels
         public string ListingType { get; set; } = "";   // "Item" or "Lease"
         public string? CategoryLabel { get; set; }      // e.g. "Electronics"
         public string? ConditionLabel { get; set; }     // e.g. "Like new"
+        public bool ShowOwnerActions { get; set; }
 
         // Optional for later
         public string? ImageUrl { get; set; }           // placeholder for now

@@ -294,6 +294,11 @@ body {
   gap: 12px;
 }
 
+.listing-card__actions {
+  display: flex;
+  gap: 8px;
+}
+
 @media (min-width: 900px) {
   .listings-row {
     grid-template-columns: 1fr 1fr;

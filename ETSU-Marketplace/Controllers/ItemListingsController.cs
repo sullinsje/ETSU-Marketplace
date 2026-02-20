@@ -23,7 +23,7 @@ namespace ETSU_Marketplace.Controllers
             var items = await _itemRepo.ReadAllAsync();
             var vms = new List<ListingCardViewModel>();
             var homeIndexVM = new HomeIndexViewModel();
-            
+
             foreach (var item in items)
             {
                 vms.Add(new ListingCardViewModel
@@ -35,7 +35,8 @@ namespace ETSU_Marketplace.Controllers
                     CreatedAt = item.CreatedAt,
                     ListingType = "Item",
                     CategoryLabel = item.Category.ToString(),
-                    ConditionLabel = item.Condition.ToString()
+                    ConditionLabel = item.Condition.ToString(),
+                    ShowOwnerActions = true
                 });
             }
 
@@ -65,7 +66,7 @@ namespace ETSU_Marketplace.Controllers
             // Pass selected filters to the View (optional display)
             ViewBag.SelectedCategory = category;
             ViewBag.SearchQuery = q;
-            
+
             foreach (var v in vms)
             {
                 homeIndexVM.LatestItemListings.Add(v);
@@ -93,7 +94,8 @@ namespace ETSU_Marketplace.Controllers
                 CreatedAt = item.CreatedAt,
                 ListingType = "Item",
                 CategoryLabel = item.Category.ToString(),
-                ConditionLabel = item.Condition.ToString()
+                ConditionLabel = item.Condition.ToString(),
+                ShowOwnerActions = true
             };
 
             return View(vm);
@@ -106,5 +108,48 @@ namespace ETSU_Marketplace.Controllers
             return View();
         }
 
+        [Route("Edit/{id}")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var item = await _itemRepo.ReadAsync(id);
+            return View(item);
+        }
+
+        [Route("Delete/{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var item = await _itemRepo.ReadAsync(id);
+            return View(item);
+        }
+
+        [Route("Manage")]
+        public async Task<IActionResult> Manage()
+        {
+            var items = await _itemRepo.ReadAllAsync();
+            var vms = new List<ListingCardViewModel>();
+            var homeIndexVM = new HomeIndexViewModel();
+
+            foreach (var item in items)
+            {
+                vms.Add(new ListingCardViewModel
+                {
+                    Id = item.Id,
+                    Title = item.Title,
+                    ShortDescription = item.Description,
+                    Price = item.Price,
+                    CreatedAt = item.CreatedAt,
+                    ListingType = "Item",
+                    CategoryLabel = item.Category.ToString(),
+                    ConditionLabel = item.Condition.ToString(),
+                    ShowOwnerActions = true
+                });
+            }
+
+            foreach (var v in vms)
+            {
+                homeIndexVM.LatestItemListings.Add(v);
+            }
+            return View(homeIndexVM);
+        }
     }
 }
