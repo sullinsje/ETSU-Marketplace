@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ETSU_Marketplace.Hubs;
+using ETSU_Marketplace.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,11 +21,14 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<IItemListingRepository, DbItemListingRepository>();
+builder.Services.AddScoped<ILeaseListingRepository, DbLeaseListingRepository>();
 builder.Services.AddSignalR();
 
 
 var app = builder.Build();
+
+app.UseHttpMethodOverride();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -36,6 +40,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();

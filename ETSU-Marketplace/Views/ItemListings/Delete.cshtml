@@ -1,0 +1,39 @@
+@model ItemListing
+
+@{
+    ViewData["Title"] = "Delete Item";
+}
+
+<div class="container mt-4">
+    <h1 class="fw-bold text-danger">Delete Listing</h1>
+    <p class="lead">Are you sure you want to permanently remove this item?</p>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-danger shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">@Model.Title</h5>
+                    <ul class="list-unstyled">
+                        <li><strong>Category:</strong> @Model.Category</li>
+                        <li><strong>Condition:</strong> @Model.Condition</li>
+                        <li><strong>Price:</strong> $@Model.Price</li>
+                    </ul>
+                    <p class="text-muted small">Created on: @Model.CreatedAt.ToShortDateString()</p>
+                </div>
+            </div>
+
+            <form action="/api/ItemAPI/delete/@Model.Id" method="post">
+                <div class="alert alert-warning d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    This action cannot be undone.
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-danger px-4 fw-bold">Permanently Delete</button>
+                    <a href="/Listings/Items" class="btn btn-outline-secondary px-4 ms-2">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

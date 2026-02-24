@@ -4,9 +4,7 @@
 }
 
 <div class="listing-details-page">
-    <a class="back-link"
-       asp-controller="Listings"
-       asp-action="@(Model.ListingType == "Lease" ? "Leases" : "Items")">
+    <a class="back-link"       asp-controller="Listings"       asp-action="@(Model.ListingType == "Lease" ? "Leases" : "Items")">
         ← Back
     </a>
 
@@ -78,46 +76,46 @@
     const listingId = @Model.Id;
 
     function renderMsg(msg) {
-        const div = document.createElement("div");
-        div.className = "chat-line";
+    const div = document.createElement("div");
+    div.className = "chat-line";
 
-        const t = msg.sentAtUtc ? new Date(msg.sentAtUtc).toLocaleTimeString() : "";
-        div.textContent = (t ? `[${t}] ` : "") + (msg.sender ?? "User") + ": " + (msg.text ?? "");
+    const t = msg.sentAtUtc ? new Date(msg.sentAtUtc).toLocaleTimeString() : "";
+    div.textContent = (t ? `[${t}] ` : "") + (msg.sender ?? "User") + ": " + (msg.text ?? "");
 
-        const log = document.getElementById("chatLog");
-        log.appendChild(div);
-        log.scrollTop = log.scrollHeight;
+    const log = document.getElementById("chatLog");
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
     }
 
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/marketplaceHub")
-        .withAutomaticReconnect()
-        .build();
+    .withUrl("/marketplaceHub")
+    .withAutomaticReconnect()
+    .build();
 
     connection.on("ReceiveListingMessage", (msg) => renderMsg(msg));
 
     async function start() {
-        try {
-            const history = await fetch(`/chat/listing/${listingId}`).then(r => r.json());
-            history.forEach(renderMsg);
-        } catch (e) { }
+    try {
+    const history = await fetch(`/chat/listing/${listingId}`).then(r => r.json());
+    history.forEach(renderMsg);
+    } catch (e) { }
 
-        await connection.start();
-        await connection.invoke("JoinListing", listingId);
+    await connection.start();
+    await connection.invoke("JoinListing", listingId);
     }
 
     document.getElementById("sendBtn").addEventListener("click", async () => {
-        const input = document.getElementById("chatInput");
-        const text = input.value.trim();
-        if (!text) return;
+    const input = document.getElementById("chatInput");
+    const text = input.value.trim();
+    if (!text) return;
 
-        await connection.invoke("SendListingMessage", listingId, text);
-        input.value = "";
-        input.focus();
+    await connection.invoke("SendListingMessage", listingId, text);
+    input.value = "";
+    input.focus();
     });
 
     document.getElementById("chatInput").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") document.getElementById("sendBtn").click();
+    if (e.key === "Enter") document.getElementById("sendBtn").click();
     });
 
     start();
