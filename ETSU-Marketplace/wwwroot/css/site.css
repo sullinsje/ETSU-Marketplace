@@ -108,8 +108,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  padding: 22px 28px;
+  gap: 12px;
+  padding: 10px 16px;
   background: #fff;
   width: 100vw;
   margin-left: calc(50% - 50vw);
@@ -123,14 +123,14 @@ body {
 }
 
 .search-form {
-  width: clamp(420px, 60vw, 900px);
+  width: clamp(280px, 40vw, 560px);
   display: flex;
 }
 
 .search-input {
   width: 100%;
-  padding: 16px 18px;
-  font-size: 18px;
+  padding: 10px 14px;
+  font-size: 14px;
   border: 2px solid #111;
   border-radius: 999px;
   outline: none;
@@ -143,7 +143,7 @@ body {
 }
 
 .logo {
-  height: 70px;
+  height: 56px;
   width: auto;
   display: block;
 }
@@ -170,8 +170,8 @@ body {
 }
 
 .topbar-actions .btn {
-  font-size: 18px;
-  padding: 14px 22px;
+  font-size: 16px;
+  padding: 12px 18px;
   border-radius: 14px;
   line-height: 1;
 }
@@ -191,7 +191,7 @@ body {
 .category-nav {
   display: flex;
   gap: 24px;
-  padding: 10px 24px;
+  padding: 6px 24px;
   background: #14133b;
   width: 100vw;
   margin-left: calc(50% - 50vw);
@@ -202,7 +202,7 @@ body {
   text-decoration: none;
   color: #ffffff;
   font-weight: 700;
-  font-size: 24px; 
+  font-size: 18px; 
 }
 
 .category-nav a.lease-link {
