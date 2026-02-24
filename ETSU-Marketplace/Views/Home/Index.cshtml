@@ -28,3 +28,47 @@
         </div>
     </div>
 </section>
+
+<section class="home-latest">
+
+    <div class="latest-bar">
+        <h2 class="latest-title">Latest Item Listings</h2>
+        <a class="latest-seeall" href="/Listings/Items">See all</a>
+    </div>
+
+    <div class="latest-grid">
+        @foreach (var card in Model.LatestItemListings)
+        {
+            <a class="latest-card" href="@card.DetailsUrl">
+                <div class="latest-img">
+                    <img src="@(string.IsNullOrWhiteSpace(card.ImageUrl) ? "/images/placeholder.png" : card.ImageUrl)"
+                         alt="@card.Title" />
+                </div>
+
+                <div class="latest-price">$@card.Price.ToString("0.00")</div>
+                <div class="latest-name">@card.Title</div>
+            </a>
+        }
+    </div>
+
+    <div class="latest-bar">
+        <h2 class="latest-title">Latest Lease Listings</h2>
+        <a class="latest-seeall" href="/Listings/Leases">See all</a>
+    </div>
+
+    <div class="latest-grid">
+        @foreach (var card in Model.LatestLeaseListings)
+        {
+            <a class="latest-card" href="@card.DetailsUrl">
+                <div class="latest-img">
+                    <img src="@(string.IsNullOrWhiteSpace(card.ImageUrl) ? "/images/placeholder.png" : card.ImageUrl)"
+                         alt="@card.Title" />
+                </div>
+
+                <div class="latest-price">$@card.Price.ToString("0.00")</div>
+                <div class="latest-name">@card.Title</div>
+            </a>
+        }
+    </div>
+
+</section>
