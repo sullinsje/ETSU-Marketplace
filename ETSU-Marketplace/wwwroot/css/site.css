@@ -614,3 +614,132 @@ body {
   width: 100%;
   min-width: 0;
 }
+
+/* =========================
+   Marketplace Forms (Create/Edit/Delete) - ETSU style
+   ========================= */
+
+.market-form-page{
+  max-width: 1100px;
+  margin: 28px auto;
+  padding: 0 16px 56px;
+}
+
+.market-form-title{
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #14133b;
+  margin: 0;
+}
+
+.market-form-subtitle{
+  margin: 6px 0 18px;
+  font-size: 15px;
+  font-weight: 800;
+  color: #14133b;
+}
+
+/* the big “section” container */
+.market-form-shell{
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 18px;
+}
+
+.market-form{
+  max-width: 640px; /* matches your screenshot: left column, not full width */
+}
+
+/* labels */
+.market-form .control-label,
+.market-form label{
+  font-weight: 800;
+  color: #0f172a;
+  margin: 18px 0 8px;
+}
+
+/* inputs (match your search pill + site borders) */
+.market-form .form-control,
+.market-form input[type="text"],
+.market-form input[type="number"],
+.market-form input[type="date"],
+.market-form input[type="datetime-local"],
+.market-form select,
+.market-form textarea{
+  width: 100%;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 16px;
+  background: #fff;
+}
+
+.market-form textarea{
+  min-height: 120px;
+  resize: vertical;
+}
+
+.market-form .form-control:focus,
+.market-form input:focus,
+.market-form select:focus,
+.market-form textarea:focus{
+  outline: none;
+  border-color: #14133b;
+  box-shadow: 0 0 0 4px rgba(20, 19, 59, 0.10);
+}
+
+/* checkbox row (clean) */
+.market-form .form-check{
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.market-form .form-check-input{
+  width: 18px;
+  height: 18px;
+  margin-top: 0;
+}
+
+.market-form .form-check-label{
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* actions */
+.market-form-actions{
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+/* primary button = navy pill like your nav buttons */
+.market-btn-primary{
+  background: #14133b;
+  color: #fff;
+  border: 1px solid #14133b;
+  border-radius: 14px;
+  padding: 12px 20px;
+  font-weight: 900;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.market-btn-primary:hover{ filter: brightness(0.95); }
+
+/* link button */
+.market-btn-link{
+  color: #14133b;
+  font-weight: 900;
+  text-decoration: none;
+  padding: 10px 2px;
+}
+
+.market-btn-link:hover{ text-decoration: underline; }
+
+/* validation */
+.market-form .text-danger{ font-weight: 800; }
