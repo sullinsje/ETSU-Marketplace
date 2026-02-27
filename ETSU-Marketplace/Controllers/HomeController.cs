@@ -1,48 +1,66 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using ETSU_Marketplace.Models;
+using Microsoft.EntityFrameworkCore;
 using ETSU_Marketplace.ViewModels;
-using System.Linq;
 
 namespace ETSU_Marketplace.Controllers
 {
     public class HomeController : Controller
     {
-        private HomeIndexViewModel BuildSampleVm()
+        private readonly ApplicationDbContext _db;
+
+        public HomeController(ApplicationDbContext db)
         {
-            var vm = new HomeIndexViewModel();
-
-            vm.LatestItemListings.AddRange(new[]
-            {
-                new ListingCardViewModel { Id=1, Title="Calculus Textbook", ShortDescription="Good condition. No highlighting.", Price=35, CreatedAt=DateTime.Now.AddDays(-3), ListingType="Item", CategoryLabel="Textbook", ConditionLabel="Used - Good", DetailsUrl="#", ImageUrl="/images/placeholder.png" },
-                new ListingCardViewModel { Id=2, Title="Gaming Headset", ShortDescription="Like new. Works perfectly.", Price=45, CreatedAt=DateTime.Now.AddDays(-2), ListingType="Item", CategoryLabel="Gaming", ConditionLabel="Like new", DetailsUrl="#", ImageUrl="/images/placeholder.png" },
-                new ListingCardViewModel { Id=3, Title="Desk Lamp", ShortDescription="Bright LED lamp for dorm/desk.", Price=10, CreatedAt=DateTime.Now.AddDays(-1), ListingType="Item", CategoryLabel="Home", ConditionLabel="Used - Excellent", DetailsUrl="#", ImageUrl="/images/placeholder.png" },
-                new ListingCardViewModel { Id=4, Title="Winter Jacket", ShortDescription="Size M. Warm and clean.", Price=25, CreatedAt=DateTime.Now.AddDays(-4), ListingType="Item", CategoryLabel="Clothing", ConditionLabel="Used - Good", DetailsUrl="#", ImageUrl="/images/placeholder.png" },
-                new ListingCardViewModel { Id=5, Title="Car Phone Mount", ShortDescription="New in box.", Price=8, CreatedAt=DateTime.Now.AddDays(-5), ListingType="Item", CategoryLabel="Vehicles", ConditionLabel="Brand new", DetailsUrl="#", ImageUrl="/images/placeholder.png" }
-            });
-
-            vm.LatestLeaseListings.AddRange(new[]
-            {
-                new ListingCardViewModel { Id=101, Title="1BR Apartment Takeover", ShortDescription="Near campus. Utilities included.", Price=650, CreatedAt=DateTime.Now.AddDays(-2), ListingType="Lease", CategoryLabel="Lease", DetailsUrl="#", ImageUrl="/images/placeholder.png" },
-                new ListingCardViewModel { Id=102, Title="Room in 3BR House", ShortDescription="Quiet roommates. Lease starts soon.", Price=520, CreatedAt=DateTime.Now.AddDays(-1), ListingType="Lease", CategoryLabel="Lease", DetailsUrl="#", ImageUrl="/images/placeholder.png" }
-            });
-
-            return vm;
+            _db = db;
         }
 
         public IActionResult Index()
         {
-            var vm = BuildSampleVm();
+            // tune these counts to whatever you want on the homepage
+            const int take = 8;
 
-            vm.LatestItemListings = vm.LatestItemListings
+            var latestItems = _db.ItemListings
+                .AsNoTracking()
                 .OrderByDescending(x => x.CreatedAt)
-                .Take(4)
+                .Take(take)
+                .Select(x => new ListingCardViewModel
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    ShortDescription = x.Description,
+                    Price = x.Price,
+                    CreatedAt = x.CreatedAt,
+                    ListingType = "Item",
+                    CategoryLabel = x.Category.ToString(),
+                    ConditionLabel = x.Condition.ToString(),
+                    ImageUrl = null,
+                    DetailsUrl = $"/Listings/Items/Details/{x.Id}?type=Item"
+                })
                 .ToList();
-            
-            vm.LatestLeaseListings = vm.LatestLeaseListings
+
+            var latestLeases = _db.LeaseListings
+                .AsNoTracking()
                 .OrderByDescending(x => x.CreatedAt)
-                .Take(4)
+                .Take(take)
+                .Select(x => new ListingCardViewModel
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    ShortDescription = x.Description,
+                    Price = x.Price,
+                    CreatedAt = x.CreatedAt,
+                    ListingType = "Lease",
+                    CategoryLabel = "Lease",
+                    ConditionLabel = null,
+                    ImageUrl = null,
+                    DetailsUrl = $"/Listings/Leases/Details/{x.Id}?type=Lease"
+                })
                 .ToList();
+
+            var vm = new HomeIndexViewModel
+            {
+                LatestItemListings = latestItems,
+                LatestLeaseListings = latestLeases
+            };
 
             return View(vm);
         }
