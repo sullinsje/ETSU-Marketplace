@@ -34,7 +34,8 @@ namespace ETSU_Marketplace.Controllers
                     Price = lease.Price,
                     CreatedAt = lease.CreatedAt,
                     ListingType = "Lease",
-                    ShowOwnerActions = true
+                    ShowOwnerActions = true,
+                    DetailsUrl = $"/Listings/Leases/Details/{lease.Id}"
                 });
             }
 
@@ -80,7 +81,7 @@ namespace ETSU_Marketplace.Controllers
                 ShortDescription = lease.Description,
                 Price = lease.Price,
                 CreatedAt = lease.CreatedAt,
-                ListingType = "Item",
+                ListingType = "Lease",
                 ShowOwnerActions = true
             };
 
@@ -125,7 +126,7 @@ namespace ETSU_Marketplace.Controllers
                     Price = lease.Price,
                     CreatedAt = lease.CreatedAt,
                     ListingType = "Lease",
-                    ShowOwnerActions = true
+                    ShowOwnerActions = true,
                 });
             }
 

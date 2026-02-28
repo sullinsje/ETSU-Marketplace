@@ -9,17 +9,25 @@
     <h1 class="page-title">Lease Takeovers</h1>
     <h3 class="section-subtitle">Latest Listings</h3>
 
-    <div class="listings-row">
-        @if (Model?.LatestLeaseListings != null && Model.LatestLeaseListings.Any())
-        {
-            foreach (var listing in Model.LatestLeaseListings)
+    @if (Model?.LatestLeaseListings != null && Model.LatestLeaseListings.Any())
+    {
+        <div class="latest-grid">
+            @foreach (var card in Model.LatestLeaseListings)
             {
-                @await Html.PartialAsync("_ListingCard", listing)
+                <a class="latest-card" href="@card.DetailsUrl" data-title="@card.Title" data-description="@card.ShortDescription">
+                    <div class="latest-img">
+                        <img src="@(string.IsNullOrWhiteSpace(card.ImageUrl) ? "/images/placeholder.png" : card.ImageUrl)"
+                            alt="@card.Title" />
+                    </div>
+
+                    <div class="latest-price">$@card.Price.ToString("0.00")</div>
+                    <div class="latest-name">@card.Title</div>
+                </a>
             }
-        }
-        else
-        {
-            <div class="empty-state">No lease takeover listings yet.</div>
-        }
-    </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">No lease takeover listings yet.</div>
+    }
 </section>

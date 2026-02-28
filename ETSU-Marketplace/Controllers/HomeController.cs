@@ -64,5 +64,43 @@ namespace ETSU_Marketplace.Controllers
 
             return View(vm);
         }
+
+        public async Task<IActionResult> Search(string? q)
+        {
+            if (string.IsNullOrWhiteSpace(q))
+                return RedirectToAction("Index");
+
+            var items = _db.ItemListings.Where(x => x.Title.Contains(q) || x.Description.Contains(q)).Select(x => new ListingCardViewModel
+            {
+                Id = x.Id,
+                Title = x.Title,
+                ShortDescription = x.Description,
+                Price = x.Price,
+                CreatedAt = x.CreatedAt,
+                ListingType = "Item",
+                DetailsUrl = $"/Listings/Items/Details/{x.Id}"
+            });
+
+            var leases = _db.LeaseListings.Where(x => x.Title.Contains(q) || x.Description.Contains(q)).Select(x => new ListingCardViewModel
+            {
+                Id = x.Id,
+                Title = x.Title,
+                ShortDescription = x.Description,
+                Price = x.Price,
+                CreatedAt = x.CreatedAt,
+                ListingType = "Lease",
+                DetailsUrl = $"/Listings/Leases/Details/{x.Id}"
+            });
+
+            var vm = new HomeIndexViewModel
+            {
+                LatestItemListings = items.ToList(),
+                LatestLeaseListings = leases.ToList()
+            };
+
+            ViewBag.SearchQuery = q;
+
+            return View("SearchResults", vm);
+        }
     }
 }

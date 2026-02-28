@@ -615,10 +615,6 @@ body {
   min-width: 0;
 }
 
-/* =========================
-   Marketplace Forms (Create/Edit/Delete) - ETSU style
-   ========================= */
-
 .market-form-page{
   max-width: 1100px;
   margin: 28px auto;
@@ -640,7 +636,6 @@ body {
   color: #14133b;
 }
 
-/* the big “section” container */
 .market-form-shell{
   background: #fff;
   border-top: 1px solid #e5e7eb;
@@ -648,10 +643,9 @@ body {
 }
 
 .market-form{
-  max-width: 640px; /* matches your screenshot: left column, not full width */
+  max-width: 640px; 
 }
 
-/* labels */
 .market-form .control-label,
 .market-form label{
   font-weight: 800;
@@ -659,7 +653,6 @@ body {
   margin: 18px 0 8px;
 }
 
-/* inputs (match your search pill + site borders) */
 .market-form .form-control,
 .market-form input[type="text"],
 .market-form input[type="number"],
@@ -689,7 +682,6 @@ body {
   box-shadow: 0 0 0 4px rgba(20, 19, 59, 0.10);
 }
 
-/* checkbox row (clean) */
 .market-form .form-check{
   margin-top: 14px;
   display: flex;
@@ -708,7 +700,6 @@ body {
   color: #0f172a;
 }
 
-/* actions */
 .market-form-actions{
   margin-top: 18px;
   display: flex;
@@ -717,7 +708,6 @@ body {
   align-items: center;
 }
 
-/* primary button = navy pill like your nav buttons */
 .market-btn-primary{
   background: #14133b;
   color: #fff;
@@ -731,7 +721,6 @@ body {
 
 .market-btn-primary:hover{ filter: brightness(0.95); }
 
-/* link button */
 .market-btn-link{
   color: #14133b;
   font-weight: 900;
@@ -741,5 +730,4 @@ body {
 
 .market-btn-link:hover{ text-decoration: underline; }
 
-/* validation */
 .market-form .text-danger{ font-weight: 800; }

@@ -36,7 +36,8 @@ namespace ETSU_Marketplace.Controllers
                     ListingType = "Item",
                     CategoryLabel = item.Category.ToString(),
                     ConditionLabel = item.Condition.ToString(),
-                    ShowOwnerActions = true
+                    ShowOwnerActions = true,
+                    DetailsUrl = $"/Listings/Items/Details/{item.Id}"
                 });
             }
 
