@@ -26,6 +26,12 @@ namespace ETSU_Marketplace.Controllers
 
             foreach (var item in items)
             {
+                var paths = new List<string>();
+                foreach (var image in item.Images)
+                {
+                    paths.Add(image.Path);
+                }
+
                 vms.Add(new ListingCardViewModel
                 {
                     Id = item.Id,
@@ -37,7 +43,8 @@ namespace ETSU_Marketplace.Controllers
                     CategoryLabel = item.Category.ToString(),
                     ConditionLabel = item.Condition.ToString(),
                     ShowOwnerActions = true,
-                    DetailsUrl = $"/Listings/Items/Details/{item.Id}"
+                    DetailsUrl = $"/Listings/Items/Details/{item.Id}",
+                    ImageUrls = [.. paths]
                 });
             }
 
@@ -86,6 +93,12 @@ namespace ETSU_Marketplace.Controllers
                 return NotFound();
             }
 
+            var paths = new List<string>();
+            foreach (var image in item.Images)
+            {
+                paths.Add(image.Path);
+            }
+
             var vm = new ListingCardViewModel
             {
                 Id = id,
@@ -96,7 +109,8 @@ namespace ETSU_Marketplace.Controllers
                 ListingType = "Item",
                 CategoryLabel = item.Category.ToString(),
                 ConditionLabel = item.Condition.ToString(),
-                ShowOwnerActions = true
+                ShowOwnerActions = true,
+                ImageUrls = [.. paths]
             };
 
             return View(vm);
@@ -132,6 +146,13 @@ namespace ETSU_Marketplace.Controllers
 
             foreach (var item in items)
             {
+                
+                var paths = new List<string>();
+                foreach (var image in item.Images)
+                {
+                    paths.Add(image.Path);
+                }
+
                 vms.Add(new ListingCardViewModel
                 {
                     Id = item.Id,
@@ -142,7 +163,8 @@ namespace ETSU_Marketplace.Controllers
                     ListingType = "Item",
                     CategoryLabel = item.Category.ToString(),
                     ConditionLabel = item.Condition.ToString(),
-                    ShowOwnerActions = true
+                    ShowOwnerActions = true,
+                    ImageUrls = [.. paths]
                 });
             }
 

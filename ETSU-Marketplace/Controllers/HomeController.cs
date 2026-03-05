@@ -19,6 +19,7 @@ namespace ETSU_Marketplace.Controllers
             const int take = 8;
 
             var latestItems = _db.ItemListings
+                .Include(x => x.Images)
                 .AsNoTracking()
                 .OrderByDescending(x => x.CreatedAt)
                 .Take(take)
@@ -32,8 +33,8 @@ namespace ETSU_Marketplace.Controllers
                     ListingType = "Item",
                     CategoryLabel = x.Category.ToString(),
                     ConditionLabel = x.Condition.ToString(),
-                    ImageUrl = null,
-                    DetailsUrl = $"/Listings/Items/Details/{x.Id}?type=Item"
+                    DetailsUrl = $"/Listings/Items/Details/{x.Id}?type=Item",
+                    ImageUrls = x.Images.Select(i => i.Path).ToList(),
                 })
                 .ToList();
 
@@ -51,7 +52,7 @@ namespace ETSU_Marketplace.Controllers
                     ListingType = "Lease",
                     CategoryLabel = "Lease",
                     ConditionLabel = null,
-                    ImageUrl = null,
+                    ImageUrls = x.Images.Select(img => img.Path).ToList(),
                     DetailsUrl = $"/Listings/Leases/Details/{x.Id}?type=Lease"
                 })
                 .ToList();
@@ -78,6 +79,7 @@ namespace ETSU_Marketplace.Controllers
                 Price = x.Price,
                 CreatedAt = x.CreatedAt,
                 ListingType = "Item",
+                ImageUrls = x.Images.Select(img => img.Path).ToList(),
                 DetailsUrl = $"/Listings/Items/Details/{x.Id}"
             });
 
@@ -89,6 +91,7 @@ namespace ETSU_Marketplace.Controllers
                 Price = x.Price,
                 CreatedAt = x.CreatedAt,
                 ListingType = "Lease",
+                ImageUrls = x.Images.Select(img => img.Path).ToList(),
                 DetailsUrl = $"/Listings/Leases/Details/{x.Id}"
             });
 

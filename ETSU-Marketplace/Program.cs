@@ -23,6 +23,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IItemListingRepository, DbItemListingRepository>();
 builder.Services.AddScoped<ILeaseListingRepository, DbLeaseListingRepository>();
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddSignalR();
 
 

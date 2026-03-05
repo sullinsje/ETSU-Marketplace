@@ -38,10 +38,11 @@
         <div class="latest-grid">
             @foreach (var card in Model.LatestItemListings)
             {
-                <a class="latest-card" href="@card.DetailsUrl" data-title="@card.Title" data-description="@card.ShortDescription">
+                <a class="latest-card" href="@card.DetailsUrl" data-title="@card.Title"
+                       data-description="@card.ShortDescription">
                     <div class="latest-img">
-                        <img src="@(string.IsNullOrWhiteSpace(card.ImageUrl) ? "/images/placeholder.png" : card.ImageUrl)"
-                            alt="@card.Title" />
+                        <img src="@(card.ImageUrl)"
+                         alt="@card.Title" />
                     </div>
 
                     <div class="latest-price">$@card.Price.ToString("0.00")</div>

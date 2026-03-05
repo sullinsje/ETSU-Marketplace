@@ -15,10 +15,10 @@ public class ItemAPIController : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> Post([FromForm] ItemListing item)
+    public async Task<IActionResult> Post([FromForm] ItemListing item, List<IFormFile> images)
     {
-        await _itemRepo.CreateAsync(item);
-        return CreatedAtAction("Get", new { id = item.Id }, item);
+        await _itemRepo.CreateAsync(item, images);
+        return LocalRedirect("/Listings/Items/Manage");
     }
 
     [HttpGet("all")]
@@ -39,9 +39,9 @@ public class ItemAPIController : ControllerBase
     }
 
     [HttpPost("update")]
-    public async Task<IActionResult> Put([FromForm] ItemListing item)
+    public async Task<IActionResult> Put([FromForm] ItemListing item, List<IFormFile> images)
     {
-        await _itemRepo.UpdateAsync(item.Id, item);
+        await _itemRepo.UpdateAsync(item.Id, item, images);
         
         // Redirect back to management dashboard
         return LocalRedirect("/Listings/Items/Manage");

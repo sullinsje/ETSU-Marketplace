@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ETSU_Marketplace.Migrations
 {
     /// <inheritdoc />
-    public partial class Mig1 : Migration
+    public partial class ImageMig1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -68,41 +68,26 @@ namespace ETSU_Marketplace.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItemListings",
+                name: "Listings",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Category = table.Column<int>(type: "INTEGER", nullable: false),
-                    Condition = table.Column<int>(type: "INTEGER", nullable: false),
                     Title = table.Column<string>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: false),
                     Price = table.Column<decimal>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ListingType = table.Column<string>(type: "TEXT", maxLength: 8, nullable: false),
+                    Category = table.Column<int>(type: "INTEGER", nullable: true),
+                    Condition = table.Column<int>(type: "INTEGER", nullable: true),
+                    Address = table.Column<string>(type: "TEXT", nullable: true),
+                    LeaseStart = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    LeaseEnd = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    UtilitiesIncluded = table.Column<bool>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItemListings", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LeaseListings",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Address = table.Column<string>(type: "TEXT", nullable: false),
-                    LeaseStart = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    LeaseEnd = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    UtilitiesIncluded = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Title = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: false),
-                    Price = table.Column<decimal>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LeaseListings", x => x.Id);
+                    table.PrimaryKey("PK_Listings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -211,6 +196,26 @@ namespace ETSU_Marketplace.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Images",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Path = table.Column<string>(type: "TEXT", nullable: false),
+                    ListingId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Images", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Images_Listings_ListingId",
+                        column: x => x.ListingId,
+                        principalTable: "Listings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -247,6 +252,11 @@ namespace ETSU_Marketplace.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Images_ListingId",
+                table: "Images",
+                column: "ListingId");
         }
 
         /// <inheritdoc />
@@ -271,16 +281,16 @@ namespace ETSU_Marketplace.Migrations
                 name: "ChatMessages");
 
             migrationBuilder.DropTable(
-                name: "ItemListings");
-
-            migrationBuilder.DropTable(
-                name: "LeaseListings");
+                name: "Images");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Listings");
         }
     }
 }

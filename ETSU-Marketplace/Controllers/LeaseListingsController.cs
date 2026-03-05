@@ -26,6 +26,12 @@ namespace ETSU_Marketplace.Controllers
 
             foreach (var lease in leases)
             {
+                var paths = new List<string>();
+                foreach (var image in lease.Images)
+                {
+                    paths.Add(image.Path);
+                }
+
                 vms.Add(new ListingCardViewModel
                 {
                     Id = lease.Id,
@@ -35,7 +41,8 @@ namespace ETSU_Marketplace.Controllers
                     CreatedAt = lease.CreatedAt,
                     ListingType = "Lease",
                     ShowOwnerActions = true,
-                    DetailsUrl = $"/Listings/Leases/Details/{lease.Id}"
+                    DetailsUrl = $"/Listings/Leases/Details/{lease.Id}",
+                    ImageUrls = [.. paths]
                 });
             }
 
@@ -74,6 +81,12 @@ namespace ETSU_Marketplace.Controllers
                 return NotFound();
             }
 
+            var paths = new List<string>();
+            foreach (var image in lease.Images)
+            {
+                paths.Add(image.Path);
+            }
+
             var vm = new ListingCardViewModel
             {
                 Id = id,
@@ -82,7 +95,8 @@ namespace ETSU_Marketplace.Controllers
                 Price = lease.Price,
                 CreatedAt = lease.CreatedAt,
                 ListingType = "Lease",
-                ShowOwnerActions = true
+                ShowOwnerActions = true,
+                ImageUrls = [.. paths]
             };
 
             return View(vm);
@@ -118,6 +132,12 @@ namespace ETSU_Marketplace.Controllers
 
             foreach (var lease in leases)
             {
+                var paths = new List<string>();
+                foreach (var image in lease.Images)
+                {
+                    paths.Add(image.Path);
+                }
+
                 vms.Add(new ListingCardViewModel
                 {
                     Id = lease.Id,
@@ -127,6 +147,7 @@ namespace ETSU_Marketplace.Controllers
                     CreatedAt = lease.CreatedAt,
                     ListingType = "Lease",
                     ShowOwnerActions = true,
+                    ImageUrls = [.. paths]
                 });
             }
 
