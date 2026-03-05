@@ -5,8 +5,8 @@ namespace ETSU_Marketplace.Services;
 public interface ILeaseListingRepository
 {
     Task<ICollection<LeaseListing>> ReadAllAsync();
-    Task<LeaseListing> CreateAsync(LeaseListing newLeaseListing);
+    Task<LeaseListing> CreateAsync(LeaseListing newLeaseListing, List<IFormFile> images);
     Task<LeaseListing?> ReadAsync(int id);
-    Task UpdateAsync(int oldId, LeaseListing updatedLeaseListing);
+    Task UpdateAsync(int oldId, LeaseListing updatedLeaseListing, List<IFormFile> images);
     Task DeleteAsync(int id);
 }

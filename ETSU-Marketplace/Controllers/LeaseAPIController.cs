@@ -15,10 +15,10 @@ public class LeaseAPIController : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> Post([FromForm] LeaseListing lease)
+    public async Task<IActionResult> Post([FromForm] LeaseListing lease, List<IFormFile> images)
     {
-        await _leaseRepo.CreateAsync(lease);
-        return CreatedAtAction("Get", new { id = lease.Id }, lease);
+        await _leaseRepo.CreateAsync(lease, images);
+        return LocalRedirect("/Listings/Leases/Manage");
     }
 
     [HttpGet("all")]
@@ -39,9 +39,9 @@ public class LeaseAPIController : ControllerBase
     }
 
     [HttpPost("update")]
-    public async Task<IActionResult> Put([FromForm] LeaseListing lease)
+    public async Task<IActionResult> Put([FromForm] LeaseListing lease, List<IFormFile> images)
     {
-        await _leaseRepo.UpdateAsync(lease.Id, lease);
+        await _leaseRepo.UpdateAsync(lease.Id, lease, images);
         
         // Redirect back to management dashboard
         return LocalRedirect("/Listings/Leases/Manage");

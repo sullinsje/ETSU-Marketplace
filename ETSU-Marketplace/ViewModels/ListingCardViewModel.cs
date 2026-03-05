@@ -16,8 +16,10 @@ namespace ETSU_Marketplace.ViewModels
         public string? ConditionLabel { get; set; }     // e.g. "Like new"
         public bool ShowOwnerActions { get; set; }
 
-        // Optional for later
-        public string? ImageUrl { get; set; }           // placeholder for now
+        public List<string> ImageUrls { get; set; } = new List<string>();
+        public string ImageUrl => (ImageUrls != null && ImageUrls.Any())
+            ? ImageUrls[0]
+            : "/images/placeholder.png";
         public string DetailsUrl { get; set; } = "";    // link to details page
     }
 }

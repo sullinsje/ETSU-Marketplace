@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ETSU_Marketplace.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260226190104_Mig1")]
-    partial class Mig1
+    [Migration("20260304180649_ImageMig1")]
+    partial class ImageMig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,46 +48,31 @@ namespace ETSU_Marketplace.Migrations
                     b.ToTable("ChatMessages");
                 });
 
-            modelBuilder.Entity("ItemListing", b =>
+            modelBuilder.Entity("ETSU_Marketplace.Models.Image", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Category")
+                    b.Property<int>("ListingId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Condition")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Title")
+                    b.Property<string>("Path")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ItemListings");
+                    b.HasIndex("ListingId");
+
+                    b.ToTable("Images");
                 });
 
-            modelBuilder.Entity("LeaseListing", b =>
+            modelBuilder.Entity("Listing", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
@@ -96,10 +81,9 @@ namespace ETSU_Marketplace.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("LeaseEnd")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("LeaseStart")
+                    b.Property<string>("ListingType")
+                        .IsRequired()
+                        .HasMaxLength(8)
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
@@ -109,12 +93,13 @@ namespace ETSU_Marketplace.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("UtilitiesIncluded")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
-                    b.ToTable("LeaseListings");
+                    b.ToTable("Listings");
+
+                    b.HasDiscriminator<string>("ListingType").HasValue("Listing");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -313,6 +298,50 @@ namespace ETSU_Marketplace.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ItemListing", b =>
+                {
+                    b.HasBaseType("Listing");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Condition")
+                        .HasColumnType("INTEGER");
+
+                    b.HasDiscriminator().HasValue("ITEM");
+                });
+
+            modelBuilder.Entity("LeaseListing", b =>
+                {
+                    b.HasBaseType("Listing");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LeaseEnd")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LeaseStart")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("UtilitiesIncluded")
+                        .HasColumnType("INTEGER");
+
+                    b.HasDiscriminator().HasValue("LEASE");
+                });
+
+            modelBuilder.Entity("ETSU_Marketplace.Models.Image", b =>
+                {
+                    b.HasOne("Listing", "Listing")
+                        .WithMany("Images")
+                        .HasForeignKey("ListingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Listing");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -362,6 +391,11 @@ namespace ETSU_Marketplace.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Listing", b =>
+                {
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }
