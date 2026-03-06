@@ -8,5 +8,5 @@ public class Image
     public string Path {get; set;} = "";
     public int ListingId {get; set;}
     [JsonIgnore]
-    public Listing Listing {get; set;}
+    public Listing? Listing {get; set;}
 }

@@ -66,44 +66,54 @@ namespace ETSU_Marketplace.Controllers
             return View(vm);
         }
 
-        public async Task<IActionResult> Search(string? q)
+        public IActionResult Search(string? q)
         {
             if (string.IsNullOrWhiteSpace(q))
-                return RedirectToAction("Index");
+            return RedirectToAction("Index");
 
-            var items = _db.ItemListings.Where(x => x.Title.Contains(q) || x.Description.Contains(q)).Select(x => new ListingCardViewModel
-            {
-                Id = x.Id,
-                Title = x.Title,
-                ShortDescription = x.Description,
-                Price = x.Price,
-                CreatedAt = x.CreatedAt,
-                ListingType = "Item",
-                ImageUrls = x.Images.Select(img => img.Path).ToList(),
-                DetailsUrl = $"/Listings/Items/Details/{x.Id}"
-            });
+            const int take = 200;
 
-            var leases = _db.LeaseListings.Where(x => x.Title.Contains(q) || x.Description.Contains(q)).Select(x => new ListingCardViewModel
-            {
-                Id = x.Id,
-                Title = x.Title,
-                ShortDescription = x.Description,
-                Price = x.Price,
-                CreatedAt = x.CreatedAt,
-                ListingType = "Lease",
-                ImageUrls = x.Images.Select(img => img.Path).ToList(),
-                DetailsUrl = $"/Listings/Leases/Details/{x.Id}"
-            });
+            var items = _db.ItemListings
+                .AsNoTracking()
+                .OrderByDescending(x => x.CreatedAt)
+                .Take(take)
+                .Select(x => new ListingCardViewModel
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    ShortDescription = x.Description,
+                    Price = x.Price,
+                    ImageUrls = x.Images.OrderBy(i => i.Id).Select(i => i.Path.StartsWith("/") ? i.Path : "/" + i.Path).ToList(),
+                    CreatedAt = x.CreatedAt,
+                    ListingType = "Item",
+                    DetailsUrl = $"/Listings/Items/Details/{x.Id}?type=Item"
+                })
+                .ToList();
 
-            var vm = new HomeIndexViewModel
-            {
-                LatestItemListings = items.ToList(),
-                LatestLeaseListings = leases.ToList()
-            };
+            var leases = _db.LeaseListings
+                .AsNoTracking()
+                .OrderByDescending(x => x.CreatedAt)
+                .Take(take)
+                .Select(x => new ListingCardViewModel
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    ShortDescription = x.Description,
+                    Price = x.Price,
+                    ImageUrls = x.Images.OrderBy(i => i.Id).Select(i => i.Path.StartsWith("/") ? i.Path : "/" + i.Path).ToList(),
+                    CreatedAt = x.CreatedAt,
+                    ListingType = "Lease",
+                    DetailsUrl = $"/Listings/Leases/Details/{x.Id}?type=Lease"
+                })
+                .ToList();
 
             ViewBag.SearchQuery = q;
 
-            return View("SearchResults", vm);
+            return View("SearchResults", new HomeIndexViewModel
+            {
+                LatestItemListings = items,
+                LatestLeaseListings = leases
+            });
         }
     }
 }

@@ -7,6 +7,7 @@
     <a class="back-link" asp-controller="Home" asp-action="Index">← Back to Home</a>
 
     <h1 class="page-title">Search Results</h1>
+
     @if (ViewBag.SearchQuery != null)
     {
         <div class="filters-summary" style="margin: 6px 0 14px 0;">
@@ -15,40 +16,85 @@
     }
 
     <h3 class="section-subtitle">Items</h3>
-    @if (Model.LatestItemListings?.Any() == true)
+    @if (Model?.LatestItemListings?.Any() == true)
     {
         <div class="latest-grid">
             @foreach (var card in Model.LatestItemListings)
             {
-                <a class="latest-card" href="@card.DetailsUrl">
+                <a class="latest-card"
+                   href="@card.DetailsUrl"
+                   data-title="@card.Title"
+                   data-description="@card.ShortDescription">
+
                     <div class="latest-img">
-                        <img src="@(string.IsNullOrWhiteSpace(card.ImageUrls[0]) ? "/images/placeholder.png" : card.ImageUrls[0])"
+                        <img src="@(string.IsNullOrWhiteSpace(card.ImageUrl) ? "/images/placeholder.png" : card.ImageUrl)"
                              alt="@card.Title" />
                     </div>
+
                     <div class="latest-price">$@card.Price.ToString("0.00")</div>
                     <div class="latest-name">@card.Title</div>
                 </a>
             }
         </div>
     }
-    else { <div class="empty-state">No item results.</div> }
+    else
+    {
+        <div class="empty-state">No item results.</div>
+    }
 
     <h3 class="section-subtitle" style="margin-top:18px;">Leases</h3>
-    @if (Model.LatestLeaseListings?.Any() == true)
+    @if (Model?.LatestLeaseListings?.Any() == true)
     {
         <div class="latest-grid">
             @foreach (var card in Model.LatestLeaseListings)
             {
-                <a class="latest-card" href="@card.DetailsUrl">
+                <a class="latest-card"
+                   href="@card.DetailsUrl"
+                   data-title="@card.Title"
+                   data-description="@card.ShortDescription">
+
                     <div class="latest-img">
-                        <img src="@(card.ImageUrl)"
+                        <img src="@(string.IsNullOrWhiteSpace(card.ImageUrl) ? "/images/placeholder.png" : card.ImageUrl)"
                              alt="@card.Title" />
                     </div>
+
                     <div class="latest-price">$@card.Price.ToString("0.00")</div>
                     <div class="latest-name">@card.Title</div>
                 </a>
             }
         </div>
     }
-    else { <div class="empty-state">No lease results.</div> }
+    else
+    {
+        <div class="empty-state">No lease results.</div>
+    }
 </section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const query = "@(ViewBag.SearchQuery ?? "")".trim();
+    if (!query) return;
+
+    const cards = Array.from(document.querySelectorAll(".latest-card"));
+
+    const data = cards.map(el => ({
+        element: el,
+        title: el.dataset.title || "",
+        description: el.dataset.description || ""
+    }));
+
+    const fuse = new Fuse(data, {
+        keys: [
+            { name: "title", weight: 0.75 },
+            { name: "description", weight: 0.25 }
+        ],
+        threshold: 0.45,        // fuzzier
+        ignoreLocation: true,   // better for short queries
+        minMatchCharLength: 2
+    });
+    const results = fuse.search(query);
+
+    cards.forEach(el => el.style.display = "none");
+    results.forEach(r => r.item.element.style.display = "");
+});
+</script>
