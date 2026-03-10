@@ -7,7 +7,7 @@ namespace ETSU_Marketplace.Controllers
 {
     // COMMENTED OUT FOR EASE OF TESTING 
     // [Authorize] 
-    [Route("Listings/Items/")]
+    [Route("Listings/Items")]
     public class ItemListingsController : Controller
     {
         private readonly IItemListingRepository _itemRepo;
@@ -17,8 +17,14 @@ namespace ETSU_Marketplace.Controllers
             _itemRepo = itemRepo;
         }
 
-        // GET: /Listings/Items?category=Textbook&q=calc
-        public async Task<IActionResult> Items(string? category, string? q)
+        [HttpGet("")]
+        public async Task<IActionResult> Items(
+            string? category,
+            string? condition,
+            decimal? minPrice,
+            decimal? maxPrice,
+            string? sort,
+            string? q)
         {
             var items = await _itemRepo.ReadAllAsync();
             var vms = new List<ListingCardViewModel>();
@@ -48,11 +54,11 @@ namespace ETSU_Marketplace.Controllers
                 });
             }
 
-            // Normalize inputs
             category = string.IsNullOrWhiteSpace(category) ? null : category.Trim();
+            condition = string.IsNullOrWhiteSpace(condition) ? null : condition.Trim();
             q = string.IsNullOrWhiteSpace(q) ? null : q.Trim();
+            sort = string.IsNullOrWhiteSpace(sort) ? null : sort.Trim();
 
-            // Filter by category if provided
             if (category != null)
             {
                 vms = vms
@@ -60,28 +66,59 @@ namespace ETSU_Marketplace.Controllers
                     .ToList();
             }
 
-            // Filter by search query if provided
+            if (condition != null)
+            {
+                vms = vms
+                    .Where(l => string.Equals(l.ConditionLabel, condition, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            if (minPrice.HasValue)
+            {
+                vms = vms
+                    .Where(l => l.Price >= minPrice.Value)
+                    .ToList();
+            }
+
+            if (maxPrice.HasValue)
+            {
+                vms = vms
+                    .Where(l => l.Price <= maxPrice.Value)
+                    .ToList();
+            }
+
             if (q != null)
             {
                 vms = vms
                     .Where(l =>
-                        (!string.IsNullOrWhiteSpace(l.Title) && l.Title.Contains(q, StringComparison.OrdinalIgnoreCase)) ||
-                        (!string.IsNullOrWhiteSpace(l.ShortDescription) && l.ShortDescription.Contains(q, StringComparison.OrdinalIgnoreCase))
-                    )
+                        (!string.IsNullOrWhiteSpace(l.Title) &&
+                         l.Title.Contains(q, StringComparison.OrdinalIgnoreCase)) ||
+                        (!string.IsNullOrWhiteSpace(l.ShortDescription) &&
+                         l.ShortDescription.Contains(q, StringComparison.OrdinalIgnoreCase)))
                     .ToList();
             }
 
-            // Pass selected filters to the View (optional display)
+            vms = sort switch
+            {
+                "price_asc" => vms.OrderBy(l => l.Price).ToList(),
+                "price_desc" => vms.OrderByDescending(l => l.Price).ToList(),
+                _ => vms.OrderByDescending(l => l.CreatedAt).ToList()
+            };
+
             ViewBag.SelectedCategory = category;
+            ViewBag.SelectedCondition = condition;
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
+            ViewBag.Sort = sort;
             ViewBag.SearchQuery = q;
 
             foreach (var v in vms)
             {
                 homeIndexVM.LatestItemListings.Add(v);
             }
+
             return View(homeIndexVM);
         }
-
 
         [Route("Details/{id}")]
         public async Task<IActionResult> Details(int id)
@@ -114,7 +151,6 @@ namespace ETSU_Marketplace.Controllers
             };
 
             return View(vm);
-
         }
 
         [Route("Create")]
@@ -146,7 +182,6 @@ namespace ETSU_Marketplace.Controllers
 
             foreach (var item in items)
             {
-                
                 var paths = new List<string>();
                 foreach (var image in item.Images)
                 {
@@ -172,6 +207,7 @@ namespace ETSU_Marketplace.Controllers
             {
                 homeIndexVM.LatestItemListings.Add(v);
             }
+
             return View(homeIndexVM);
         }
     }

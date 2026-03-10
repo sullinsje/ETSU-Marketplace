@@ -66,48 +66,84 @@ namespace ETSU_Marketplace.Controllers
             return View(vm);
         }
 
-        public IActionResult Search(string? q)
+        public IActionResult Search(string? q, string? category, string? condition, decimal? minPrice, decimal? maxPrice, string? sort)
         {
             if (string.IsNullOrWhiteSpace(q))
-            return RedirectToAction("Index");
+                return RedirectToAction("Index");
 
             const int take = 200;
 
-            var items = _db.ItemListings
-                .AsNoTracking()
-                .OrderByDescending(x => x.CreatedAt)
-                .Take(take)
-                .Select(x => new ListingCardViewModel
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    ShortDescription = x.Description,
-                    Price = x.Price,
-                    ImageUrls = x.Images.OrderBy(i => i.Id).Select(i => i.Path.StartsWith("/") ? i.Path : "/" + i.Path).ToList(),
-                    CreatedAt = x.CreatedAt,
-                    ListingType = "Item",
-                    DetailsUrl = $"/Listings/Items/Details/{x.Id}?type=Item"
-                })
-                .ToList();
+            var items = _db.ItemListings.AsNoTracking().OrderByDescending(x => x.CreatedAt).Take(take).Select(x => new ListingCardViewModel
+            {
+                Id = x.Id,
+                Title = x.Title,
+                ShortDescription = x.Description,
+                Price = x.Price,
+                CreatedAt = x.CreatedAt,
+                ListingType = "Item",
+                CategoryLabel = x.Category.ToString(),
+                ConditionLabel = x.Condition.ToString(),
+                DetailsUrl = $"/Listings/Items/Details/{x.Id}?type=Item"
+            }).ToList();
 
-            var leases = _db.LeaseListings
-                .AsNoTracking()
-                .OrderByDescending(x => x.CreatedAt)
-                .Take(take)
-                .Select(x => new ListingCardViewModel
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    ShortDescription = x.Description,
-                    Price = x.Price,
-                    ImageUrls = x.Images.OrderBy(i => i.Id).Select(i => i.Path.StartsWith("/") ? i.Path : "/" + i.Path).ToList(),
-                    CreatedAt = x.CreatedAt,
-                    ListingType = "Lease",
-                    DetailsUrl = $"/Listings/Leases/Details/{x.Id}?type=Lease"
-                })
-                .ToList();
+            var leases = _db.LeaseListings.AsNoTracking().OrderByDescending(x => x.CreatedAt).Take(take).Select(x => new ListingCardViewModel
+            {
+                Id = x.Id,
+                Title = x.Title,
+                ShortDescription = x.Description,
+                Price = x.Price,
+                CreatedAt = x.CreatedAt,
+                ListingType = "Lease",
+                ImageUrls = x.Images.Select(i => i.Path).ToList(),
+                DetailsUrl = $"/Listings/Leases/Details/{x.Id}?type=Lease"
+            }).ToList();
+
+            category = string.IsNullOrWhiteSpace(category) ? null : category.Trim();
+            condition = string.IsNullOrWhiteSpace(condition) ? null : condition.Trim();
+            sort = string.IsNullOrWhiteSpace(sort) ? null : sort.Trim();
+
+            if (category != null)
+            {
+                items = items.Where(x => string.Equals(x.CategoryLabel, category, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (condition != null)
+            {
+                items = items.Where(x => string.Equals(x.ConditionLabel, condition, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (minPrice.HasValue)
+            {
+                items = items.Where(x => x.Price >= minPrice.Value).ToList();
+                leases = leases.Where(x => x.Price >= minPrice.Value).ToList();
+            }
+
+            if (maxPrice.HasValue)
+            {
+                items = items.Where(x => x.Price <= maxPrice.Value).ToList();
+                leases = leases.Where(x => x.Price <= maxPrice.Value).ToList();
+            }
+
+            items = sort switch
+            {
+                "price_asc" => items.OrderBy(x => x.Price).ToList(),
+                "price_desc" => items.OrderByDescending(x => x.Price).ToList(),
+                _ => items.OrderByDescending(x => x.CreatedAt).ToList()
+            };
+
+            leases = sort switch
+            {
+                "price_asc" => leases.OrderBy(x => x.Price).ToList(),
+                "price_desc" => leases.OrderByDescending(x => x.Price).ToList(),
+                _ => leases.OrderByDescending(x => x.CreatedAt).ToList()
+            };
 
             ViewBag.SearchQuery = q;
+            ViewBag.SelectedCategory = category;
+            ViewBag.SelectedCondition = condition;
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
+            ViewBag.Sort = sort;
 
             return View("SearchResults", new HomeIndexViewModel
             {
