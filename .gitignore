@@ -484,4 +484,4 @@ $RECYCLE.BIN/
 .db
 ETSU-Marketplace/Data/Data.db
 *.db
-wwwroot/images/listings/*
+ETSU-Marketplace/wwwroot/images/listings/*
