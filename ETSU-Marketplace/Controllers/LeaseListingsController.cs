@@ -21,7 +21,6 @@ namespace ETSU_Marketplace.Controllers
             _userManager = userManager;
         }
 
-        // GET: /Listings/Leases?q=apartment
         public async Task<IActionResult> Leases(string? q)
         {
             var leases = await _leaseRepo.ReadAllAsync();
@@ -31,6 +30,7 @@ namespace ETSU_Marketplace.Controllers
             foreach (var lease in leases)
             {
                 var paths = new List<string>();
+
                 foreach (var image in lease.Images)
                 {
                     paths.Add(image.Path);
@@ -45,15 +45,13 @@ namespace ETSU_Marketplace.Controllers
                     CreatedAt = lease.CreatedAt,
                     ListingType = "Lease",
                     ShowOwnerActions = true,
-                    DetailsUrl = $"/Listings/Leases/Details/{lease.Id}",
+                    DetailsUrl = $"/Listings/Leases/Details/{lease.Id}?type=Lease",
                     ImageUrls = [.. paths]
                 });
             }
 
-            // Normalize inputs
             q = string.IsNullOrWhiteSpace(q) ? null : q.Trim();
 
-            // Filter by search query if provided
             if (q != null)
             {
                 vms = vms
@@ -64,7 +62,6 @@ namespace ETSU_Marketplace.Controllers
                     .ToList();
             }
 
-            // Pass selected filters to the View (optional display)
             ViewBag.SearchQuery = q;
 
             foreach (var v in vms)
@@ -75,7 +72,6 @@ namespace ETSU_Marketplace.Controllers
         }
 
         [Route("Details/{id}")]
-        // GET: /Listings/Details/101?type=Lease
         public async Task<IActionResult> Details(int id)
         {
             var lease = await _leaseRepo.ReadAsync(id);
@@ -166,6 +162,7 @@ namespace ETSU_Marketplace.Controllers
             foreach (var lease in leases)
             {
                 var paths = new List<string>();
+
                 foreach (var image in lease.Images)
                 {
                     paths.Add(image.Path);
@@ -180,6 +177,7 @@ namespace ETSU_Marketplace.Controllers
                     CreatedAt = lease.CreatedAt,
                     ListingType = "Lease",
                     ShowOwnerActions = true,
+                    DetailsUrl = $"/Listings/Leases/Details/{lease.Id}?type=Lease",
                     ImageUrls = [.. paths]
                 });
             }
@@ -188,6 +186,74 @@ namespace ETSU_Marketplace.Controllers
             {
                 homeIndexVM.LatestLeaseListings.Add(v);
             }
+            return View(homeIndexVM);
+        }
+
+        [HttpGet("")]
+        public async Task<IActionResult> Leases(decimal? minPrice, decimal? maxPrice, string? sort, string? q)
+        {
+            var leases = await _leaseRepo.ReadAllAsync();
+            var vms = new List<ListingCardViewModel>();
+            var homeIndexVM = new HomeIndexViewModel();
+
+            foreach (var lease in leases)
+            {
+                var paths = new List<string>();
+
+                foreach (var image in lease.Images)
+                {
+                    paths.Add(image.Path);
+                }
+
+                vms.Add(new ListingCardViewModel
+                {
+                    Id = lease.Id,
+                    Title = lease.Title,
+                    ShortDescription = lease.Description,
+                    Price = lease.Price,
+                    CreatedAt = lease.CreatedAt,
+                    ListingType = "Lease",
+                    ShowOwnerActions = true,
+                    DetailsUrl = $"/Listings/Leases/Details/{lease.Id}?type=Lease",
+                    ImageUrls = [.. paths]
+                });
+            }
+
+            q = string.IsNullOrWhiteSpace(q) ? null : q.Trim();
+            sort = string.IsNullOrWhiteSpace(sort) ? null : sort.Trim();
+
+            if (minPrice.HasValue)
+            {
+                vms = vms.Where(l => l.Price >= minPrice.Value).ToList();
+            }
+
+            if (maxPrice.HasValue)
+            {
+                vms = vms.Where(l => l.Price <= maxPrice.Value).ToList();
+            }
+
+            if (q != null)
+            {
+                vms = vms.Where(l => (!string.IsNullOrWhiteSpace(l.Title) && l.Title.Contains(q, StringComparison.OrdinalIgnoreCase)) || (!string.IsNullOrWhiteSpace(l.ShortDescription) && l.ShortDescription.Contains(q, StringComparison.OrdinalIgnoreCase))).ToList();
+            }
+
+            vms = sort switch
+            {
+                "price_asc" => vms.OrderBy(l => l.Price).ToList(),
+                "price_desc" => vms.OrderByDescending(l => l.Price).ToList(),
+                _ => vms.OrderByDescending(l => l.CreatedAt).ToList()
+            };
+
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
+            ViewBag.Sort = sort;
+            ViewBag.SearchQuery = q;
+
+            foreach (var v in vms)
+            {
+                homeIndexVM.LatestLeaseListings.Add(v);
+            }
+
             return View(homeIndexVM);
         }
     }
