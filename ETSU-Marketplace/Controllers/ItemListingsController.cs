@@ -2,19 +2,23 @@ using Microsoft.AspNetCore.Mvc;
 using ETSU_Marketplace.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using ETSU_Marketplace.Services;
+using Microsoft.AspNetCore.Identity;
+using ETSU_Marketplace.Models;
 
 namespace ETSU_Marketplace.Controllers
 {
     // COMMENTED OUT FOR EASE OF TESTING 
-    // [Authorize] 
+    [Authorize]
     [Route("Listings/Items/")]
     public class ItemListingsController : Controller
     {
         private readonly IItemListingRepository _itemRepo;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ItemListingsController(IItemListingRepository itemRepo)
+        public ItemListingsController(IItemListingRepository itemRepo, UserManager<ApplicationUser> userManager)
         {
             _itemRepo = itemRepo;
+            _userManager = userManager;
         }
 
         // GET: /Listings/Items?category=Textbook&q=calc
@@ -110,7 +114,9 @@ namespace ETSU_Marketplace.Controllers
                 CategoryLabel = item.Category.ToString(),
                 ConditionLabel = item.Condition.ToString(),
                 ShowOwnerActions = true,
-                ImageUrls = [.. paths]
+                ImageUrls = [.. paths],
+                Poster = $"{item.User!.FirstName} {item.User.LastName}",
+                PosterAvatar = item.User.Avatar.Path
             };
 
             return View(vm);
@@ -126,27 +132,52 @@ namespace ETSU_Marketplace.Controllers
         [Route("Edit/{id}")]
         public async Task<IActionResult> Edit(int id)
         {
+            // Allow only creators to access 
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return Unauthorized();
             var item = await _itemRepo.ReadAsync(id);
+
+            if (item == null) return NotFound();
+
+            if (item.UserId != userId)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return View(item);
         }
 
         [Route("Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            // Allow only creators to access 
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return Unauthorized();
             var item = await _itemRepo.ReadAsync(id);
+
+            if (item == null) return NotFound();
+
+            if (item.UserId != userId)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return View(item);
         }
 
         [Route("Manage")]
         public async Task<IActionResult> Manage()
         {
-            var items = await _itemRepo.ReadAllAsync();
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return Unauthorized();
+
+            var items = await _itemRepo.ReadUserPostsAsync(userId);
             var vms = new List<ListingCardViewModel>();
             var homeIndexVM = new HomeIndexViewModel();
 
             foreach (var item in items)
             {
-                
+
                 var paths = new List<string>();
                 foreach (var image in item.Images)
                 {

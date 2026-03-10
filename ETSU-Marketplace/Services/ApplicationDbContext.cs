@@ -2,7 +2,7 @@ using ETSU_Marketplace.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-public class ApplicationDbContext : IdentityDbContext
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -15,16 +15,30 @@ public class ApplicationDbContext : IdentityDbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Listing>()
-            .HasMany(l => l.Images)
-            .WithOne(i => i.Listing)
-            .HasForeignKey(i => i.ListingId)
-            .OnDelete(DeleteBehavior.Cascade); // Deleting a listing deletes its images
+        base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Listing>()
-            .HasDiscriminator<string>("ListingType") // Changes column name to "ListingType"
-            .HasValue<ItemListing>("ITEM")           // Stores "ITEM" instead of class name
-            .HasValue<LeaseListing>("LEASE");        // Stores "LEASE"
+        // --- Listing Configuration ---
+        modelBuilder.Entity<Listing>(entity =>
+        {
+            // Relationship: Listing -> Images (Defined once here)
+            entity.HasMany(l => l.Images)
+                .WithOne(i => i.Listing)
+                .HasForeignKey(i => i.ListingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Inheritance: TPH Discriminator
+            entity.HasDiscriminator<string>("ListingType")
+                .HasValue<ItemListing>("ITEM")
+                .HasValue<LeaseListing>("LEASE");
+        });
+
+        // --- ApplicationUser Configuration ---
+        modelBuilder.Entity<ApplicationUser>()
+            .HasOne(u => u.Avatar)
+            .WithOne(i => i.User) // Explicitly link to the User property in Image.cs
+            .HasForeignKey<ApplicationUser>(u => u.AvatarId)
+            .OnDelete(DeleteBehavior.SetNull);
+
     }
 
     // Tables for Item and Lease Listings (for specific queries in Services)

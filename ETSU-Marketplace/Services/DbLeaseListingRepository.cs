@@ -21,13 +21,16 @@ public class DbLeaseListingRepository : ILeaseListingRepository
         .ToListAsync();
     }
 
-    public async Task<LeaseListing> CreateAsync(LeaseListing newLeaseListing, List<IFormFile> images)
+    public async Task<LeaseListing> CreateAsync(LeaseListing newLeaseListing, List<IFormFile> images, string userId)
     {
+        newLeaseListing.UserId = userId;
+
         if (images != null && images.Any())
         {
             foreach (var file in images)
             {
                 string path = await _fss.ProcessImageUpload(file);
+
                 newLeaseListing.Images.Add(new Image { Path = path });
             }
         }
@@ -40,6 +43,7 @@ public class DbLeaseListingRepository : ILeaseListingRepository
     public async Task<LeaseListing?> ReadAsync(int id)
     {
         return await _db.LeaseListings
+            .Include(l => l.User)
             .Include(l => l.Images)
             .FirstOrDefaultAsync(l => l.Id == id);
     }
@@ -99,6 +103,15 @@ public class DbLeaseListingRepository : ILeaseListingRepository
             _db.LeaseListings.Remove(leaseListingToDelete);
             await _db.SaveChangesAsync();
         }
+    }
+
+    public async Task<ICollection<LeaseListing>> ReadUserPostsAsync(string userId)
+    {
+        return await _db.LeaseListings
+            .Include(l => l.Images)
+            .Where(l => l.UserId == userId)
+            .OrderByDescending(l => l.CreatedAt)
+            .ToListAsync();
     }
 
 }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ETSU_Marketplace.Hubs;
 using ETSU_Marketplace.Services;
+using ETSU_Marketplace.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +13,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 // Add Identity services
-builder.Services.AddDefaultIdentity<IdentityUser>(options => 
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => 
     {
         options.SignIn.RequireConfirmedAccount = false;
         // Configure other options as needed
@@ -24,6 +25,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IItemListingRepository, DbItemListingRepository>();
 builder.Services.AddScoped<ILeaseListingRepository, DbLeaseListingRepository>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<IUserRepository, DbUserRepository>();
 builder.Services.AddSignalR();
 
 
