@@ -19,6 +19,12 @@
                 <p class="listing-details-subtitle">@Model.ShortDescription</p>
             }
 
+            @if (!string.IsNullOrWhiteSpace(Model.Poster))
+            {
+                <img src="@Model.PosterAvatar" class="avatar-circle"/>
+                <p class="listing-details-subtitle">@Model.Poster</p>
+            }
+
             <div class="listing-details-price-row">
                 <div class="listing-details-price">$@Model.Price</div>
                 <span class="badge">@Model.ListingType</span>

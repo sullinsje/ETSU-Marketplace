@@ -21,5 +21,8 @@ namespace ETSU_Marketplace.ViewModels
             ? ImageUrls[0]
             : "/images/placeholder.png";
         public string DetailsUrl { get; set; } = "";    // link to details page
+        public string Poster {get; set; } = "";
+        public string PosterAvatar  {get; set; } = "";
+        
     }
 }

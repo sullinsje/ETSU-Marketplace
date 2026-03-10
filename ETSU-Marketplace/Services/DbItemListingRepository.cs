@@ -1,4 +1,5 @@
 using ETSU_Marketplace.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ETSU_Marketplace.Services;
@@ -21,13 +22,16 @@ public class DbItemListingRepository : IItemListingRepository
         .ToListAsync();
     }
 
-    public async Task<ItemListing> CreateAsync(ItemListing newItemListing, List<IFormFile> images)
+    public async Task<ItemListing> CreateAsync(ItemListing newItemListing, List<IFormFile> images, string userId)
     {
+        newItemListing.UserId = userId;
+
         if (images != null && images.Any())
         {
             foreach (var file in images)
             {
                 string path = await _fss.ProcessImageUpload(file);
+
                 newItemListing.Images.Add(new Image { Path = path });
             }
         }
@@ -40,6 +44,7 @@ public class DbItemListingRepository : IItemListingRepository
     public async Task<ItemListing?> ReadAsync(int id)
     {
         return await _db.ItemListings
+            .Include(l => l.User)
             .Include(l => l.Images)
             .FirstOrDefaultAsync(l => l.Id == id);
     }
@@ -96,6 +101,15 @@ public class DbItemListingRepository : IItemListingRepository
             _db.ItemListings.Remove(itemListingToDelete);
             await _db.SaveChangesAsync();
         }
+    }
+
+    public async Task<ICollection<ItemListing>> ReadUserPostsAsync(string userId)
+    {
+        return await _db.ItemListings
+            .Include(l => l.Images)
+            .Where(l => l.UserId == userId)
+            .OrderByDescending(l => l.CreatedAt)
+            .ToListAsync();
     }
 
 }

@@ -10,4 +10,8 @@ public abstract class Listing
 
     //One to many relationship to Image
     public List<Image> Images {get; set;} = new List<Image>();
+
+    //Relationship with User
+    public string UserId {get; set; } = string.Empty;
+    public ApplicationUser? User {get; set;}
 }

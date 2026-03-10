@@ -1,23 +1,35 @@
+using ETSU_Marketplace.Models;
 using ETSU_Marketplace.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 [EnableCors]
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class ItemAPIController : ControllerBase
 {
     private readonly IItemListingRepository _itemRepo;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ItemAPIController(IItemListingRepository itemRepo)
+    public ItemAPIController(IItemListingRepository itemRepo, UserManager<ApplicationUser> userManager)
     {
         _itemRepo = itemRepo;
+        _userManager = userManager;
     }
 
     [HttpPost("create")]
     public async Task<IActionResult> Post([FromForm] ItemListing item, List<IFormFile> images)
     {
-        await _itemRepo.CreateAsync(item, images);
+        // Get current logged in user
+        var userId = _userManager.GetUserId(User);
+
+        if (userId == null) return Unauthorized();
+
+        // send user and images
+        await _itemRepo.CreateAsync(item, images, userId);
         return LocalRedirect("/Listings/Items/Manage");
     }
 

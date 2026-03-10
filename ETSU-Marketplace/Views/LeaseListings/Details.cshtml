@@ -4,7 +4,7 @@
 }
 
 <div class="listing-details-page">
-    <a class="back-link" asp-controller="Listings" asp-action="Leases">
+    <a class="back-link" asp-controller="Listings" asp-action="@(Model.ListingType == "Lease" ? "Leases" : "Items")">
         ← Back
     </a>
     <div class="listing-details-card">
@@ -17,6 +17,12 @@
             @if (!string.IsNullOrWhiteSpace(Model.ShortDescription))
             {
                 <p class="listing-details-subtitle">@Model.ShortDescription</p>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.Poster))
+            {
+                <img src="@Model.PosterAvatar" class="avatar-circle"/>
+                <p class="listing-details-subtitle">@Model.Poster</p>
             }
 
             <div class="listing-details-price-row">

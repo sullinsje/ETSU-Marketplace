@@ -751,6 +751,15 @@ body {
     display: block; 
 }
 
+.avatar-circle {
+    height: 56px;      
+    width: 56px;       
+    border-radius: 50%; 
+    object-fit: cover;  
+    display: block;
+    border: 2px solid #ddd; 
+}
+
 .items-filter-bar{
   display:flex;
   flex-wrap:wrap;

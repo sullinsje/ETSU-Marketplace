@@ -2,19 +2,23 @@ using Microsoft.AspNetCore.Mvc;
 using ETSU_Marketplace.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using ETSU_Marketplace.Services;
+using Microsoft.AspNetCore.Identity;
+using ETSU_Marketplace.Models;
 
 namespace ETSU_Marketplace.Controllers
 {
     // COMMENTED OUT FOR EASE OF TESTING 
-    // [Authorize] 
+    [Authorize] 
     [Route("Listings/Leases")]
     public class LeaseListingsController : Controller
     {
         private readonly ILeaseListingRepository _leaseRepo;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public LeaseListingsController(ILeaseListingRepository leaseRepo)
+        public LeaseListingsController(ILeaseListingRepository leaseRepo, UserManager<ApplicationUser> userManager)
         {
             _leaseRepo = leaseRepo;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Leases(string? q)
@@ -92,7 +96,9 @@ namespace ETSU_Marketplace.Controllers
                 CreatedAt = lease.CreatedAt,
                 ListingType = "Lease",
                 ShowOwnerActions = true,
-                ImageUrls = [.. paths]
+                ImageUrls = [.. paths],
+                Poster = $"{lease.User!.FirstName} {lease.User.LastName}",
+                PosterAvatar = lease.User.Avatar.Path
             };
 
             return View(vm);
@@ -108,21 +114,48 @@ namespace ETSU_Marketplace.Controllers
         [Route("Edit/{id}")]
         public async Task<IActionResult> Edit(int id)
         {
+            // Allow only creators to access 
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return Unauthorized();
+
             var lease = await _leaseRepo.ReadAsync(id);
+
+            if (lease == null) return NotFound();
+
+            if (lease.UserId != userId)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return View(lease);
         }
 
         [Route("Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            // Allow only creators to access 
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return Unauthorized();
             var lease = await _leaseRepo.ReadAsync(id);
+
+            if (lease == null) return NotFound();
+
+            if (lease.UserId != userId)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return View(lease);
         }
 
         [Route("Manage")]
         public async Task<IActionResult> Manage()
         {
-            var leases = await _leaseRepo.ReadAllAsync();
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return Unauthorized();
+
+            // fetch only the logged in user's post
+            var leases = await _leaseRepo.ReadUserPostsAsync(userId);
             var vms = new List<ListingCardViewModel>();
             var homeIndexVM = new HomeIndexViewModel();
 

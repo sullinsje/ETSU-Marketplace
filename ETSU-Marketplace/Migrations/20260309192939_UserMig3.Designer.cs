@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ETSU_Marketplace.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260309192939_UserMig3")]
+    partial class UserMig3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.13");
@@ -51,9 +54,6 @@ namespace ETSU_Marketplace.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("AvatarId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -110,9 +110,6 @@ namespace ETSU_Marketplace.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AvatarId")
-                        .IsUnique();
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -136,9 +133,15 @@ namespace ETSU_Marketplace.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ListingId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Images");
                 });
@@ -348,16 +351,6 @@ namespace ETSU_Marketplace.Migrations
                     b.HasDiscriminator().HasValue("LEASE");
                 });
 
-            modelBuilder.Entity("ETSU_Marketplace.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("ETSU_Marketplace.Models.Image", "Avatar")
-                        .WithOne("User")
-                        .HasForeignKey("ETSU_Marketplace.Models.ApplicationUser", "AvatarId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Avatar");
-                });
-
             modelBuilder.Entity("ETSU_Marketplace.Models.Image", b =>
                 {
                     b.HasOne("Listing", "Listing")
@@ -365,7 +358,14 @@ namespace ETSU_Marketplace.Migrations
                         .HasForeignKey("ListingId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("ETSU_Marketplace.Models.ApplicationUser", "User")
+                        .WithOne("Avatar")
+                        .HasForeignKey("ETSU_Marketplace.Models.Image", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.Navigation("Listing");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Listing", b =>
@@ -432,12 +432,9 @@ namespace ETSU_Marketplace.Migrations
 
             modelBuilder.Entity("ETSU_Marketplace.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("Listings");
-                });
+                    b.Navigation("Avatar");
 
-            modelBuilder.Entity("ETSU_Marketplace.Models.Image", b =>
-                {
-                    b.Navigation("User");
+                    b.Navigation("Listings");
                 });
 
             modelBuilder.Entity("Listing", b =>

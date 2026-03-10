@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ETSU_Marketplace.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260309172718_UserMig")]
+    partial class UserMig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.13");
@@ -110,8 +113,7 @@ namespace ETSU_Marketplace.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AvatarId")
-                        .IsUnique();
+                    b.HasIndex("AvatarId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -129,7 +131,7 @@ namespace ETSU_Marketplace.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ListingId")
+                    b.Property<int>("ListingId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Path")
@@ -351,9 +353,8 @@ namespace ETSU_Marketplace.Migrations
             modelBuilder.Entity("ETSU_Marketplace.Models.ApplicationUser", b =>
                 {
                     b.HasOne("ETSU_Marketplace.Models.Image", "Avatar")
-                        .WithOne("User")
-                        .HasForeignKey("ETSU_Marketplace.Models.ApplicationUser", "AvatarId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .WithMany()
+                        .HasForeignKey("AvatarId");
 
                     b.Navigation("Avatar");
                 });
@@ -363,7 +364,8 @@ namespace ETSU_Marketplace.Migrations
                     b.HasOne("Listing", "Listing")
                         .WithMany("Images")
                         .HasForeignKey("ListingId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Listing");
                 });
@@ -433,11 +435,6 @@ namespace ETSU_Marketplace.Migrations
             modelBuilder.Entity("ETSU_Marketplace.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Listings");
-                });
-
-            modelBuilder.Entity("ETSU_Marketplace.Models.Image", b =>
-                {
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Listing", b =>
