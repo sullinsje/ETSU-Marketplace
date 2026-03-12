@@ -33,6 +33,12 @@ var app = builder.Build();
 
 app.UseHttpMethodOverride();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate(); // This replaces 'dotnet ef database update'
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
