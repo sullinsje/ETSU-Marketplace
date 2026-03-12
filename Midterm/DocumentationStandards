@@ -1,1 +1,55 @@
+# Documentation Standards
 
+## Purpose
+This document defines the documentation standards for the ETSU Marketplace project. Its purpose is to ensure that project materials are clear, consistent, and easy for team members, instructors, and future developers to understand.
+
+## General Standards
+- All documentation should be written in clear, professional language.
+- Documents should use consistent headings and formatting.
+- File names should be descriptive and easy to identify.
+- Documentation must be updated whenever major features, requirements, or designs change.
+
+## Required Project Documentation
+The project repository should include the following documentation when applicable:
+- Product vision or project overview
+- Architecture or design diagrams
+- Coding standards
+- Test plan
+- Deployment environment documentation
+- Sprint reports
+- Definition of Ready and Definition of Done
+
+## Code Documentation Standards
+- Classes, methods, and important functions should have meaningful names.
+- Complex logic should include brief comments explaining its purpose.
+- Comments should clarify code, not restate obvious behavior.
+- Public-facing components and important methods should be documented clearly enough for another developer to maintain them.
+
+## Feature Documentation Standards
+Each major feature should be documented with:
+- Feature name
+- Purpose
+- Inputs and outputs
+- Dependencies
+- Known limitations or assumptions
+
+## Version Control Documentation
+- Commit messages should be short, clear, and descriptive.
+- Each major documentation update should be committed with a meaningful message.
+- Repository documents should reflect the current state of the project.
+
+## Team Documentation Expectations
+- Each team member is responsible for keeping their assigned work documented.
+- Shared documents should be reviewed for accuracy before submission.
+- Outdated documentation should be revised or removed.
+
+## Quality Standard
+Good documentation should be:
+- Accurate
+- Consistent
+- Readable
+- Organized
+- Updated as the project evolves
+
+## Conclusion
+Following these documentation standards helps maintain project quality, improves communication, and supports effective development throughout the ETSU Marketplace project.
