@@ -7,19 +7,12 @@ using ETSU_Marketplace.Models;
 
 namespace ETSU_Marketplace.Controllers
 {
-    // COMMENTED OUT FOR EASE OF TESTING 
     [Authorize]
     [Route("Listings/Items/")]
-    public class ItemListingsController : Controller
+    public class ItemListingsController : BaseListingsController<ItemListing, IItemListingRepository>
     {
-        private readonly IItemListingRepository _itemRepo;
-        private readonly UserManager<ApplicationUser> _userManager;
-
         public ItemListingsController(IItemListingRepository itemRepo, UserManager<ApplicationUser> userManager)
-        {
-            _itemRepo = itemRepo;
-            _userManager = userManager;
-        }
+            : base(itemRepo, userManager) { }
 
         [HttpGet("")]
         public async Task<IActionResult> Items(
@@ -30,7 +23,7 @@ namespace ETSU_Marketplace.Controllers
             string? sort,
             string? q)
         {
-            var items = await _itemRepo.ReadAllAsync();
+            var items = await _repository.ReadAllAsync();
             var vms = new List<ListingCardViewModel>();
             var homeIndexVM = new HomeIndexViewModel();
 
@@ -42,20 +35,13 @@ namespace ETSU_Marketplace.Controllers
                     paths.Add(image.Path);
                 }
 
-                vms.Add(new ListingCardViewModel
-                {
-                    Id = item.Id,
-                    Title = item.Title,
-                    ShortDescription = item.Description,
-                    Price = item.Price,
-                    CreatedAt = item.CreatedAt,
-                    ListingType = "Item",
-                    CategoryLabel = item.Category.ToString(),
-                    ConditionLabel = item.Condition.ToString(),
-                    ShowOwnerActions = true,
-                    DetailsUrl = $"/Listings/Items/Details/{item.Id}",
-                    ImageUrls = [.. paths]
-                });
+                // Use BaseListingController method to build VM
+                var vm = MapToCardViewModel(item, false);
+                vm.ListingType = "Item";
+                vm.CategoryLabel = item.Category.ToString();
+                vm.ConditionLabel = item.Condition.ToString();
+                vm.DetailsUrl = $"/Listings/Items/Details/{item.Id}?type=Item";
+                vms.Add(vm);
             }
 
             category = string.IsNullOrWhiteSpace(category) ? null : category.Trim();
@@ -127,7 +113,7 @@ namespace ETSU_Marketplace.Controllers
         [Route("Details/{id}")]
         public async Task<IActionResult> Details(int id)
         {
-            var item = await _itemRepo.ReadAsync(id);
+            var item = await _repository.ReadAsync(id);
 
             if (item == null)
             {
@@ -140,21 +126,13 @@ namespace ETSU_Marketplace.Controllers
                 paths.Add(image.Path);
             }
 
-            var vm = new ListingCardViewModel
-            {
-                Id = id,
-                Title = item.Title,
-                ShortDescription = item.Description,
-                Price = item.Price,
-                CreatedAt = item.CreatedAt,
-                ListingType = "Item",
-                CategoryLabel = item.Category.ToString(),
-                ConditionLabel = item.Condition.ToString(),
-                ShowOwnerActions = true,
-                ImageUrls = [.. paths],
-                Poster = $"{item.User!.FirstName} {item.User.LastName}",
-                PosterAvatar = item.User.Avatar.Path
-            };
+            // Use BaseListingController method to build VM
+            var vm = MapToCardViewModel(item, false);
+            vm.ListingType = "Item";
+            vm.CategoryLabel = item.Category.ToString();
+            vm.ConditionLabel = item.Condition.ToString();
+            vm.Poster = $"{item.User!.FirstName} {item.User.LastName}";
+            vm.PosterAvatar = item.User.Avatar.Path;
 
             return View(vm);
         }
@@ -169,13 +147,12 @@ namespace ETSU_Marketplace.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             // Allow only creators to access 
-            var userId = _userManager.GetUserId(User);
-            if (userId == null) return Unauthorized();
-            var item = await _itemRepo.ReadAsync(id);
+            if (CurrentUserId == null) return Unauthorized();
+            var item = await _repository.ReadAsync(id);
 
             if (item == null) return NotFound();
 
-            if (item.UserId != userId)
+            if (!await IsOwner(item))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -187,13 +164,12 @@ namespace ETSU_Marketplace.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             // Allow only creators to access 
-            var userId = _userManager.GetUserId(User);
-            if (userId == null) return Unauthorized();
-            var item = await _itemRepo.ReadAsync(id);
+            if (CurrentUserId == null) return Unauthorized();
+            var item = await _repository.ReadAsync(id);
 
             if (item == null) return NotFound();
 
-            if (item.UserId != userId)
+            if (!await IsOwner(item))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -204,10 +180,9 @@ namespace ETSU_Marketplace.Controllers
         [Route("Manage")]
         public async Task<IActionResult> Manage()
         {
-            var userId = _userManager.GetUserId(User);
-            if (userId == null) return Unauthorized();
+            if (CurrentUserId == null) return Unauthorized();
 
-            var items = await _itemRepo.ReadUserPostsAsync(userId);
+            var items = await _repository.ReadUserPostsAsync(CurrentUserId);
             var vms = new List<ListingCardViewModel>();
             var homeIndexVM = new HomeIndexViewModel();
 
@@ -220,19 +195,15 @@ namespace ETSU_Marketplace.Controllers
                     paths.Add(image.Path);
                 }
 
-                vms.Add(new ListingCardViewModel
-                {
-                    Id = item.Id,
-                    Title = item.Title,
-                    ShortDescription = item.Description,
-                    Price = item.Price,
-                    CreatedAt = item.CreatedAt,
-                    ListingType = "Item",
-                    CategoryLabel = item.Category.ToString(),
-                    ConditionLabel = item.Condition.ToString(),
-                    ShowOwnerActions = true,
-                    ImageUrls = [.. paths]
-                });
+                // Use BaseListingController method to build VM
+                // Set to true since this is only the current user's posts and they need to see 
+                // owner actions
+                var vm = MapToCardViewModel(item, true);
+                vm.ListingType = "Item";
+                vm.CategoryLabel = item.Category.ToString();
+                vm.ConditionLabel = item.Condition.ToString();
+                vm.DetailsUrl = $"/Listings/Items/Details/{item.Id}?type=Item";
+                vms.Add(vm);
             }
 
             foreach (var v in vms)

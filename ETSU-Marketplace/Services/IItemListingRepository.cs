@@ -2,12 +2,8 @@ using ETSU_Marketplace.Models;
 
 namespace ETSU_Marketplace.Services;
 
-public interface IItemListingRepository
+public interface IItemListingRepository : IListingRepository<ItemListing>
 {
-    Task<ICollection<ItemListing>> ReadAllAsync();
-    Task<ItemListing> CreateAsync(ItemListing newItemListing, List<IFormFile> image, string userId);
-    Task<ItemListing?> ReadAsync(int id);
-    Task UpdateAsync(int oldId, ItemListing updatedItemListing, List<IFormFile> images);
-    Task DeleteAsync(int id);
-    Task<ICollection<ItemListing>> ReadUserPostsAsync(string userId);
+    // This interface "inherits" other methods
+    new Task UpdateAsync(int id, ItemListing updatedItem, List<IFormFile> images);
 }
