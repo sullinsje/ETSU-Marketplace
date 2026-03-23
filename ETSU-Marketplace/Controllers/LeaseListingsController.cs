@@ -10,71 +10,15 @@ namespace ETSU_Marketplace.Controllers
     // COMMENTED OUT FOR EASE OF TESTING 
     [Authorize] 
     [Route("Listings/Leases")]
-    public class LeaseListingsController : Controller
+    public class LeaseListingsController : BaseListingsController<LeaseListing, ILeaseListingRepository>
     {
-        private readonly ILeaseListingRepository _leaseRepo;
-        private readonly UserManager<ApplicationUser> _userManager;
-
         public LeaseListingsController(ILeaseListingRepository leaseRepo, UserManager<ApplicationUser> userManager)
-        {
-            _leaseRepo = leaseRepo;
-            _userManager = userManager;
-        }
-
-        public async Task<IActionResult> Leases(string? q)
-        {
-            var leases = await _leaseRepo.ReadAllAsync();
-            var vms = new List<ListingCardViewModel>();
-            var homeIndexVM = new HomeIndexViewModel();
-
-            foreach (var lease in leases)
-            {
-                var paths = new List<string>();
-
-                foreach (var image in lease.Images)
-                {
-                    paths.Add(image.Path);
-                }
-
-                vms.Add(new ListingCardViewModel
-                {
-                    Id = lease.Id,
-                    Title = lease.Title,
-                    ShortDescription = lease.Description,
-                    Price = lease.Price,
-                    CreatedAt = lease.CreatedAt,
-                    ListingType = "Lease",
-                    ShowOwnerActions = true,
-                    DetailsUrl = $"/Listings/Leases/Details/{lease.Id}?type=Lease",
-                    ImageUrls = [.. paths]
-                });
-            }
-
-            q = string.IsNullOrWhiteSpace(q) ? null : q.Trim();
-
-            if (q != null)
-            {
-                vms = vms
-                    .Where(l =>
-                        (!string.IsNullOrWhiteSpace(l.Title) && l.Title.Contains(q, StringComparison.OrdinalIgnoreCase)) ||
-                        (!string.IsNullOrWhiteSpace(l.ShortDescription) && l.ShortDescription.Contains(q, StringComparison.OrdinalIgnoreCase))
-                    )
-                    .ToList();
-            }
-
-            ViewBag.SearchQuery = q;
-
-            foreach (var v in vms)
-            {
-                homeIndexVM.LatestLeaseListings.Add(v);
-            }
-            return View(homeIndexVM);
-        }
+            : base(leaseRepo, userManager) { }
 
         [Route("Details/{id}")]
         public async Task<IActionResult> Details(int id)
         {
-            var lease = await _leaseRepo.ReadAsync(id);
+            var lease = await _repository.ReadAsync(id);
 
             if (lease == null)
             {
@@ -87,19 +31,11 @@ namespace ETSU_Marketplace.Controllers
                 paths.Add(image.Path);
             }
 
-            var vm = new ListingCardViewModel
-            {
-                Id = id,
-                Title = lease.Title,
-                ShortDescription = lease.Description,
-                Price = lease.Price,
-                CreatedAt = lease.CreatedAt,
-                ListingType = "Lease",
-                ShowOwnerActions = true,
-                ImageUrls = [.. paths],
-                Poster = $"{lease.User!.FirstName} {lease.User.LastName}",
-                PosterAvatar = lease.User.Avatar.Path
-            };
+            // Use BaseListingController method to build VM
+            var vm = MapToCardViewModel(lease, false);
+            vm.ListingType = "Lease";
+            vm.Poster = $"{lease.User!.FirstName} {lease.User.LastName}";
+            vm.PosterAvatar = lease.User.Avatar.Path;
 
             return View(vm);
 
@@ -115,37 +51,34 @@ namespace ETSU_Marketplace.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             // Allow only creators to access 
-            var userId = _userManager.GetUserId(User);
-            if (userId == null) return Unauthorized();
+            if (CurrentUserId == null) return Unauthorized();
+            var item = await _repository.ReadAsync(id);
 
-            var lease = await _leaseRepo.ReadAsync(id);
+            if (item == null) return NotFound();
 
-            if (lease == null) return NotFound();
-
-            if (lease.UserId != userId)
+            if (!await IsOwner(item))
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            return View(lease);
+            return View(item);
         }
 
         [Route("Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             // Allow only creators to access 
-            var userId = _userManager.GetUserId(User);
-            if (userId == null) return Unauthorized();
-            var lease = await _leaseRepo.ReadAsync(id);
+            if (CurrentUserId == null) return Unauthorized();
+            var item = await _repository.ReadAsync(id);
 
-            if (lease == null) return NotFound();
+            if (item == null) return NotFound();
 
-            if (lease.UserId != userId)
+            if (!await IsOwner(item))
             {
                 return RedirectToAction("Index", "Home");
             }
 
-            return View(lease);
+            return View(item);
         }
 
         [Route("Manage")]
@@ -155,7 +88,7 @@ namespace ETSU_Marketplace.Controllers
             if (userId == null) return Unauthorized();
 
             // fetch only the logged in user's post
-            var leases = await _leaseRepo.ReadUserPostsAsync(userId);
+            var leases = await _repository.ReadUserPostsAsync(userId);
             var vms = new List<ListingCardViewModel>();
             var homeIndexVM = new HomeIndexViewModel();
 
@@ -168,18 +101,13 @@ namespace ETSU_Marketplace.Controllers
                     paths.Add(image.Path);
                 }
 
-                vms.Add(new ListingCardViewModel
-                {
-                    Id = lease.Id,
-                    Title = lease.Title,
-                    ShortDescription = lease.Description,
-                    Price = lease.Price,
-                    CreatedAt = lease.CreatedAt,
-                    ListingType = "Lease",
-                    ShowOwnerActions = true,
-                    DetailsUrl = $"/Listings/Leases/Details/{lease.Id}?type=Lease",
-                    ImageUrls = [.. paths]
-                });
+                // Use BaseListingController method to build VM
+                // Set to true since this is only the current user's posts and they need to see 
+                // owner actions
+                var vm = MapToCardViewModel(lease, true);
+                vm.ListingType = "Lease";
+                vm.DetailsUrl = $"/Listings/Leases/Details/{lease.Id}?type=Lease";
+                vms.Add(vm);
             }
 
             foreach (var v in vms)
@@ -192,7 +120,7 @@ namespace ETSU_Marketplace.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Leases(decimal? minPrice, decimal? maxPrice, string? sort, string? q)
         {
-            var leases = await _leaseRepo.ReadAllAsync();
+            var leases = await _repository.ReadAllAsync();
             var vms = new List<ListingCardViewModel>();
             var homeIndexVM = new HomeIndexViewModel();
 
@@ -205,18 +133,11 @@ namespace ETSU_Marketplace.Controllers
                     paths.Add(image.Path);
                 }
 
-                vms.Add(new ListingCardViewModel
-                {
-                    Id = lease.Id,
-                    Title = lease.Title,
-                    ShortDescription = lease.Description,
-                    Price = lease.Price,
-                    CreatedAt = lease.CreatedAt,
-                    ListingType = "Lease",
-                    ShowOwnerActions = true,
-                    DetailsUrl = $"/Listings/Leases/Details/{lease.Id}?type=Lease",
-                    ImageUrls = [.. paths]
-                });
+                // Use BaseListingController method to build VM
+                var vm = MapToCardViewModel(lease, false);
+                vm.ListingType = "Lease";
+                vm.DetailsUrl = $"/Listings/Leases/Details/{lease.Id}?type=Lease";
+                vms.Add(vm);
             }
 
             q = string.IsNullOrWhiteSpace(q) ? null : q.Trim();

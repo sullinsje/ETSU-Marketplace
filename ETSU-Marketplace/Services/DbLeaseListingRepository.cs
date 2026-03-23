@@ -3,115 +3,34 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ETSU_Marketplace.Services;
 
-public class DbLeaseListingRepository : ILeaseListingRepository
+/// <summary>
+/// This class now inherits from the base ListingRepository, only overriding the Update method
+/// because of its unique changes in this class
+/// </summary>
+public class DbLeaseListingRepository : DbListingRepository<LeaseListing>, ILeaseListingRepository
 {
-    private readonly ApplicationDbContext _db;
-    private readonly IFileStorageService _fss;
-
     public DbLeaseListingRepository(ApplicationDbContext db, IFileStorageService fss)
+        : base(db, fss)
     {
-        _db = db;
-        _fss = fss;
+
     }
 
-    public async Task<ICollection<LeaseListing>> ReadAllAsync()
+    public override async Task UpdateAsync(int id, LeaseListing updatedLease, List<IFormFile> images)
     {
-        return await _db.LeaseListings
-        .Include(l => l.Images)
-        .ToListAsync();
-    }
+        // Run all the Title/Price/Image logic from the base class
+        await base.UpdateAsync(id, updatedLease, images);
 
-    public async Task<LeaseListing> CreateAsync(LeaseListing newLeaseListing, List<IFormFile> images, string userId)
-    {
-        newLeaseListing.UserId = userId;
-
-        if (images != null && images.Any())
+        // Handle the specific fields for Leases
+        var existing = await _db.LeaseListings.FindAsync(id);
+        if (existing != null)
         {
-            foreach (var file in images)
-            {
-                string path = await _fss.ProcessImageUpload(file);
+            existing.Address = updatedLease.Address;
+            existing.LeaseStart = updatedLease.LeaseStart;
+            existing.LeaseEnd = updatedLease.LeaseEnd;
+            existing.UtilitiesIncluded = updatedLease.UtilitiesIncluded;
 
-                newLeaseListing.Images.Add(new Image { Path = path });
-            }
-        }
-
-        await _db.LeaseListings.AddAsync(newLeaseListing);
-        await _db.SaveChangesAsync();
-        return newLeaseListing;
-    }
-
-    public async Task<LeaseListing?> ReadAsync(int id)
-    {
-        return await _db.LeaseListings
-            .Include(l => l.User)
-            .Include(l => l.Images)
-            .FirstOrDefaultAsync(l => l.Id == id);
-    }
-
-    public async Task UpdateAsync(int oldId, LeaseListing updatedLeaseListing, List<IFormFile> newImages)
-    {
-        var leaseListingToUpdate = await ReadAsync(oldId);
-
-        if (leaseListingToUpdate == null) return;
-
-        leaseListingToUpdate.Address = updatedLeaseListing.Address;
-        leaseListingToUpdate.LeaseStart = updatedLeaseListing.LeaseStart;
-        leaseListingToUpdate.LeaseEnd = updatedLeaseListing.LeaseEnd;
-        leaseListingToUpdate.UtilitiesIncluded = updatedLeaseListing.UtilitiesIncluded;
-        leaseListingToUpdate.Title = updatedLeaseListing.Title;
-        leaseListingToUpdate.Description = updatedLeaseListing.Description;
-        leaseListingToUpdate.Price = updatedLeaseListing.Price;
-
-        if (newImages != null && newImages.Any())
-        {
-            foreach (var img in leaseListingToUpdate.Images)
-            {
-                _fss.DeleteImage(img.Path);
-            }
-
-            _db.Images.RemoveRange(leaseListingToUpdate.Images);
-            leaseListingToUpdate.Images.Clear();
-
-            foreach (var file in newImages)
-            {
-                var dbPath = await _fss.ProcessImageUpload(file);
-                leaseListingToUpdate.Images.Add(new Image { Path = dbPath });
-            }
-        }
-
-        await _db.SaveChangesAsync();
-    }
-
-
-    public async Task DeleteAsync(int id)
-    {
-        var leaseListingToDelete = await ReadAsync(id);
-        if (leaseListingToDelete != null)
-        {
-            if (leaseListingToDelete.Images != null)
-            {
-                foreach (var img in leaseListingToDelete.Images)
-                {
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", img.Path.TrimStart('/'));
-
-                    if (File.Exists(filePath))
-                    {
-                        File.Delete(filePath);
-                    }
-                }
-            }
-            _db.LeaseListings.Remove(leaseListingToDelete);
             await _db.SaveChangesAsync();
         }
-    }
-
-    public async Task<ICollection<LeaseListing>> ReadUserPostsAsync(string userId)
-    {
-        return await _db.LeaseListings
-            .Include(l => l.Images)
-            .Where(l => l.UserId == userId)
-            .OrderByDescending(l => l.CreatedAt)
-            .ToListAsync();
     }
 
 }

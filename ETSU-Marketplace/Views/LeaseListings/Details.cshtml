@@ -3,72 +3,75 @@
     ViewData["Title"] = "Lease Details";
 }
 
+@* This is just the equivalent of hitting the back button in the browser. Easier 
+   than embedding a return url into the VM *@
 <div class="listing-details-page">
-    <a class="back-link" asp-controller="Listings" asp-action="@(Model.ListingType == "Lease" ? "Leases" : "Items")">
+    <a class="back-link" href="javascript:void(0);" onclick="history.back();">
         ← Back
     </a>
-    <div class="listing-details-card">
-        <div class="listing-details-image-wrapper">
-            <img src="@(Model.ImageUrl)" alt="@Model.Title" />
-        </div>
-        <div class="listing-details-body">
-            <h1 class="listing-details-title">@Model.Title</h1>
-
-            @if (!string.IsNullOrWhiteSpace(Model.ShortDescription))
-            {
-                <p class="listing-details-subtitle">@Model.ShortDescription</p>
-            }
-
-            @if (!string.IsNullOrWhiteSpace(Model.Poster))
-            {
-                <img src="@Model.PosterAvatar" class="avatar-circle"/>
-                <p class="listing-details-subtitle">@Model.Poster</p>
-            }
-
-            <div class="listing-details-price-row">
-                <div class="listing-details-price">$@Model.Price.ToString("0.00")</div>
-                <span class="badge">Lease</span>
-
-                @* Leases usually won't have condition *@
-                @if (!string.IsNullOrWhiteSpace(Model.CategoryLabel))
-                {
-                    <span class="chip">@Model.CategoryLabel</span>
-                }
-            </div>
-
-            <div class="listing-details-meta">
-                <div class="meta-row">
-                    <span class="meta-label">Price:</span> <span>$@Model.Price.ToString("0.00")</span>
-                </div>
-                <div class="meta-row">
-                    <span class="meta-label">Type:</span> <span>Lease</span>
-                </div>
-
-                @if (!string.IsNullOrWhiteSpace(Model.CategoryLabel))
-                {
-                    <div class="meta-row">
-                        <span class="meta-label">Category:</span> <span>@Model.CategoryLabel</span>
-                    </div>
-                }
-            </div>
-
-            <div class="details-divider"></div>
-
-            <div class="live-chat-wrap">
-                <h2 class="live-chat-title">Live Chat</h2>
-
-                <div class="chat-card">
-                    <div id="chatLog" class="chat-messages"></div>
-
-                    <div class="chat-composer">
-                        <input id="chatInput" class="chat-input" placeholder="Message the seller..." />
-                        <button id="sendBtn" class="chat-send-btn" type="button">Send</button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+</div>
+<div class="listing-details-card">
+    <div class="listing-details-image-wrapper">
+        <img src="@(Model.ImageUrl)" alt="@Model.Title" />
     </div>
+    <div class="listing-details-body">
+        <h1 class="listing-details-title">@Model.Title</h1>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ShortDescription))
+        {
+            <p class="listing-details-subtitle">@Model.ShortDescription</p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Poster))
+        {
+            <img src="@Model.PosterAvatar" class="avatar-circle" />
+            <p class="listing-details-subtitle">@Model.Poster</p>
+        }
+
+        <div class="listing-details-price-row">
+            <div class="listing-details-price">$@Model.Price.ToString("0.00")</div>
+            <span class="badge">Lease</span>
+
+            @* Leases usually won't have condition *@
+            @if (!string.IsNullOrWhiteSpace(Model.CategoryLabel))
+            {
+                <span class="chip">@Model.CategoryLabel</span>
+            }
+        </div>
+
+        <div class="listing-details-meta">
+            <div class="meta-row">
+                <span class="meta-label">Price:</span> <span>$@Model.Price.ToString("0.00")</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">Type:</span> <span>Lease</span>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.CategoryLabel))
+            {
+                <div class="meta-row">
+                    <span class="meta-label">Category:</span> <span>@Model.CategoryLabel</span>
+                </div>
+            }
+        </div>
+
+        <div class="details-divider"></div>
+
+        <div class="live-chat-wrap">
+            <h2 class="live-chat-title">Live Chat</h2>
+
+            <div class="chat-card">
+                <div id="chatLog" class="chat-messages"></div>
+
+                <div class="chat-composer">
+                    <input id="chatInput" class="chat-input" placeholder="Message the seller..." />
+                    <button id="sendBtn" class="chat-send-btn" type="button">Send</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
@@ -77,46 +80,46 @@
     const listingId = @Model.Id;
 
     function renderMsg(msg) {
-        const div = document.createElement("div");
-        div.className = "chat-line";
+    const div = document.createElement("div");
+    div.className = "chat-line";
 
-        const t = msg.sentAtUtc ? new Date(msg.sentAtUtc).toLocaleTimeString() : "";
-        div.textContent = (t ? `[${t}] ` : "") + (msg.sender ?? "User") + ": " + (msg.text ?? "");
+    const t = msg.sentAtUtc ? new Date(msg.sentAtUtc).toLocaleTimeString() : "";
+    div.textContent = (t ? `[${t}] ` : "") + (msg.sender ?? "User") + ": " + (msg.text ?? "");
 
-        const log = document.getElementById("chatLog");
-        log.appendChild(div);
-        log.scrollTop = log.scrollHeight;
+    const log = document.getElementById("chatLog");
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
     }
 
     const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/marketplaceHub")
-        .withAutomaticReconnect()
-        .build();
+    .withUrl("/marketplaceHub")
+    .withAutomaticReconnect()
+    .build();
 
     connection.on("ReceiveListingMessage", (msg) => renderMsg(msg));
 
     async function start() {
-        try {
-            const history = await fetch(`/chat/listing/${listingId}`).then(r => r.json());
-            history.forEach(renderMsg);
-        } catch (e) { }
+    try {
+    const history = await fetch(`/chat/listing/${listingId}`).then(r => r.json());
+    history.forEach(renderMsg);
+    } catch (e) { }
 
-        await connection.start();
-        await connection.invoke("JoinListing", listingId);
+    await connection.start();
+    await connection.invoke("JoinListing", listingId);
     }
 
     document.getElementById("sendBtn").addEventListener("click", async () => {
-        const input = document.getElementById("chatInput");
-        const text = input.value.trim();
-        if (!text) return;
+    const input = document.getElementById("chatInput");
+    const text = input.value.trim();
+    if (!text) return;
 
-        await connection.invoke("SendListingMessage", listingId, text);
-        input.value = "";
-        input.focus();
+    await connection.invoke("SendListingMessage", listingId, text);
+    input.value = "";
+    input.focus();
     });
 
     document.getElementById("chatInput").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") document.getElementById("sendBtn").click();
+    if (e.key === "Enter") document.getElementById("sendBtn").click();
     });
 
     start();
