@@ -9,5 +9,6 @@ public class ApplicationUser : IdentityUser
     public int? AvatarId { get; set; }
     public Image Avatar {get; set;} = new Image {Path = "/images/default-avatar.jpg"};
     public ICollection<Listing> Listings {get; set;} = new List<Listing>();
+    public string? Bio {get; set; }
     
 }
