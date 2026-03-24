@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ETSU_Marketplace.Hubs;
 using ETSU_Marketplace.Services;
 using ETSU_Marketplace.Models;
+using ETSU_Marketplace;
 
 
 var builder = WebApplication.CreateBuilder(args);
