@@ -27,8 +27,10 @@
 
         @if (!string.IsNullOrWhiteSpace(Model.Poster))
         {
-            <img src="@Model.PosterAvatar" class="avatar-circle" />
-            <p class="listing-details-subtitle">@Model.Poster</p>
+            <a href="/Users/Details/@Model.PosterId">
+                <img src="@Model.PosterAvatar" class="avatar-circle" alt="avatar" />
+                <p class="listing-details-subtitle">@Model.Poster</p>
+            </a>
         }
 
         <div class="listing-details-price-row">
