@@ -8,10 +8,12 @@ public abstract class Listing
     public decimal Price { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+    public bool IsSold { get; set; } = false;
+
     //One to many relationship to Image
-    public List<Image> Images {get; set;} = new List<Image>();
+    public List<Image> Images { get; set; } = new List<Image>();
 
     //Relationship with User
-    public string UserId {get; set; } = string.Empty;
-    public ApplicationUser? User {get; set;}
+    public string UserId { get; set; } = string.Empty;
+    public ApplicationUser? User { get; set; }
 }

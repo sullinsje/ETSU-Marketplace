@@ -9,11 +9,15 @@ namespace ETSU_Marketplace.ViewModels
         public string ShortDescription { get; set; } = "";
         public decimal Price { get; set; }
         public DateTime CreatedAt { get; set; }
+        public bool IsSold { get; set; }
+
+        // Favorites
+        public bool IsFavorited { get; set; }
 
         // Display helpers
-        public string ListingType { get; set; } = "";   // "Item" or "Lease"
-        public string? CategoryLabel { get; set; }      // e.g. "Electronics"
-        public string? ConditionLabel { get; set; }     // e.g. "Like new"
+        public string ListingType { get; set; } = "";
+        public string? CategoryLabel { get; set; }
+        public string? ConditionLabel { get; set; }
         public bool ShowOwnerActions { get; set; }
 
         public List<string> ImageUrls { get; set; } = new List<string>();

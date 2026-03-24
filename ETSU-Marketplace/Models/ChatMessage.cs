@@ -1,20 +1,22 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
-public class ChatMessage
+namespace ETSU_Marketplace.Models
 {
-    public int Id { get; set; }
+    public class ChatMessage
+    {
+        public int Id { get; set; }
 
-    public int ListingId { get; set; }
+        [Required]
+        public int ConversationId { get; set; }
+        public Conversation? Conversation { get; set; }
 
-    [Required]
-    public string SenderUserId { get; set; } = "";
+        [Required]
+        public string SenderId { get; set; } = string.Empty;
+        public ApplicationUser? Sender { get; set; }
 
-    [Required]
-    public string SenderDisplayName { get; set; } = "";
+        [Required]
+        public string Text { get; set; } = string.Empty;
 
-    [Required]
-    public string Text { get; set; } = "";
-
-    public DateTime SentAtUtc { get; set; } = DateTime.UtcNow;
+        public DateTime SentAtUtc { get; set; } = DateTime.UtcNow;
+    }
 }

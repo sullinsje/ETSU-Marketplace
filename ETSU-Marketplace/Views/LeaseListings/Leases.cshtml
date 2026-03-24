@@ -72,12 +72,24 @@
                    href="@card.DetailsUrl"
                    data-title="@card.Title"
                    data-description="@card.ShortDescription">
-                    <div class="latest-img">
-                        <img src="@(string.IsNullOrWhiteSpace(card.ImageUrl) ? "/images/placeholder.png" : card.ImageUrl)"alt="@card.Title" />
+                    <div class="latest-img" style="position:relative;">
+                        <img src="@(string.IsNullOrWhiteSpace(card.ImageUrl) ? "/images/placeholder.png" : card.ImageUrl)"
+                             alt="@card.Title" />
+
+                        @if (card.IsSold)
+                        {
+                            <span class="badge bg-danger position-absolute top-0 end-0 m-2">SOLD</span>
+                        }
                     </div>
 
                     <div class="latest-price">$@card.Price.ToString("0.00")</div>
-                    <div class="latest-name">@card.Title</div>
+                    <div class="latest-name">
+                        @card.Title
+                        @if (card.IsSold)
+                        {
+                            <span class="text-danger"> • Sold</span>
+                        }
+                    </div>
                 </a>
             }
         </div>

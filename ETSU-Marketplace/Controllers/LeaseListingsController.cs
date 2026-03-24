@@ -7,8 +7,7 @@ using ETSU_Marketplace.Models;
 
 namespace ETSU_Marketplace.Controllers
 {
-    // COMMENTED OUT FOR EASE OF TESTING 
-    [Authorize] 
+    [Authorize]
     [Route("Listings/Leases")]
     public class LeaseListingsController : BaseListingsController<LeaseListing, ILeaseListingRepository>
     {
@@ -25,20 +24,12 @@ namespace ETSU_Marketplace.Controllers
                 return NotFound();
             }
 
-            var paths = new List<string>();
-            foreach (var image in lease.Images)
-            {
-                paths.Add(image.Path);
-            }
-
-            // Use BaseListingController method to build VM
-            var vm = MapToCardViewModel(lease, false);
+            var vm = MapToCardViewModel(lease, lease.UserId == CurrentUserId);
             vm.ListingType = "Lease";
             vm.Poster = $"{lease.User!.FirstName} {lease.User.LastName}";
-            vm.PosterAvatar = lease.User.Avatar.Path;
+            vm.PosterAvatar = lease.User?.Avatar?.Path ?? "/images/placeholder.png";
 
             return View(vm);
-
         }
 
         [Route("Create")]
@@ -50,13 +41,12 @@ namespace ETSU_Marketplace.Controllers
         [Route("Edit/{id}")]
         public async Task<IActionResult> Edit(int id)
         {
-            // Allow only creators to access 
             if (CurrentUserId == null) return Unauthorized();
             var item = await _repository.ReadAsync(id);
 
             if (item == null) return NotFound();
 
-            if (!await IsOwner(item))
+            if (!IsOwner(item))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -67,13 +57,12 @@ namespace ETSU_Marketplace.Controllers
         [Route("Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            // Allow only creators to access 
             if (CurrentUserId == null) return Unauthorized();
             var item = await _repository.ReadAsync(id);
 
             if (item == null) return NotFound();
 
-            if (!await IsOwner(item))
+            if (!IsOwner(item))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -87,23 +76,12 @@ namespace ETSU_Marketplace.Controllers
             var userId = _userManager.GetUserId(User);
             if (userId == null) return Unauthorized();
 
-            // fetch only the logged in user's post
             var leases = await _repository.ReadUserPostsAsync(userId);
             var vms = new List<ListingCardViewModel>();
             var homeIndexVM = new HomeIndexViewModel();
 
             foreach (var lease in leases)
             {
-                var paths = new List<string>();
-
-                foreach (var image in lease.Images)
-                {
-                    paths.Add(image.Path);
-                }
-
-                // Use BaseListingController method to build VM
-                // Set to true since this is only the current user's posts and they need to see 
-                // owner actions
                 var vm = MapToCardViewModel(lease, true);
                 vm.ListingType = "Lease";
                 vm.DetailsUrl = $"/Listings/Leases/Details/{lease.Id}?type=Lease";
@@ -114,6 +92,7 @@ namespace ETSU_Marketplace.Controllers
             {
                 homeIndexVM.LatestLeaseListings.Add(v);
             }
+
             return View(homeIndexVM);
         }
 
@@ -126,14 +105,6 @@ namespace ETSU_Marketplace.Controllers
 
             foreach (var lease in leases)
             {
-                var paths = new List<string>();
-
-                foreach (var image in lease.Images)
-                {
-                    paths.Add(image.Path);
-                }
-
-                // Use BaseListingController method to build VM
                 var vm = MapToCardViewModel(lease, false);
                 vm.ListingType = "Lease";
                 vm.DetailsUrl = $"/Listings/Leases/Details/{lease.Id}?type=Lease";
@@ -155,14 +126,17 @@ namespace ETSU_Marketplace.Controllers
 
             if (q != null)
             {
-                vms = vms.Where(l => (!string.IsNullOrWhiteSpace(l.Title) && l.Title.Contains(q, StringComparison.OrdinalIgnoreCase)) || (!string.IsNullOrWhiteSpace(l.ShortDescription) && l.ShortDescription.Contains(q, StringComparison.OrdinalIgnoreCase))).ToList();
+                vms = vms.Where(l =>
+                    (!string.IsNullOrWhiteSpace(l.Title) && l.Title.Contains(q, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrWhiteSpace(l.ShortDescription) && l.ShortDescription.Contains(q, StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
             }
 
             vms = sort switch
             {
-                "price_asc" => vms.OrderBy(l => l.Price).ToList(),
-                "price_desc" => vms.OrderByDescending(l => l.Price).ToList(),
-                _ => vms.OrderByDescending(l => l.CreatedAt).ToList()
+                "price_asc" => vms.OrderBy(l => l.IsSold).ThenBy(l => l.Price).ToList(),
+                "price_desc" => vms.OrderBy(l => l.IsSold).ThenByDescending(l => l.Price).ToList(),
+                _ => vms.OrderBy(l => l.IsSold).ThenByDescending(l => l.CreatedAt).ToList()
             };
 
             ViewBag.MinPrice = minPrice;

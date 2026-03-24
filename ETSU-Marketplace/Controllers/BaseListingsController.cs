@@ -21,7 +21,7 @@ public abstract class BaseListingsController<TEntity, TRepository> : Controller
 
     protected string? CurrentUserId => _userManager.GetUserId(User);
 
-    protected async Task<bool> IsOwner(TEntity entity)
+    protected bool IsOwner(TEntity entity)
     {
         return entity != null && entity.UserId == CurrentUserId;
     }
@@ -35,6 +35,7 @@ public abstract class BaseListingsController<TEntity, TRepository> : Controller
             ShortDescription = entity.Description,
             Price = entity.Price,
             CreatedAt = entity.CreatedAt,
+            IsSold = entity.IsSold,
             ShowOwnerActions = showOwnerActions,
             ImageUrls = entity.Images.Select(i => i.Path).ToList(),
             

@@ -15,13 +15,13 @@ namespace ETSU_Marketplace.Controllers
 
         public IActionResult Index()
         {
-            // tune these counts to whatever you want on the homepage
             const int take = 8;
 
             var latestItems = _db.ItemListings
                 .Include(x => x.Images)
                 .AsNoTracking()
-                .OrderByDescending(x => x.CreatedAt)
+                .OrderBy(x => x.IsSold)
+                .ThenByDescending(x => x.CreatedAt)
                 .Take(take)
                 .Select(x => new ListingCardViewModel
                 {
@@ -30,6 +30,7 @@ namespace ETSU_Marketplace.Controllers
                     ShortDescription = x.Description,
                     Price = x.Price,
                     CreatedAt = x.CreatedAt,
+                    IsSold = x.IsSold,
                     ListingType = "Item",
                     CategoryLabel = x.Category.ToString(),
                     ConditionLabel = x.Condition.ToString(),
@@ -39,8 +40,10 @@ namespace ETSU_Marketplace.Controllers
                 .ToList();
 
             var latestLeases = _db.LeaseListings
+                .Include(x => x.Images)
                 .AsNoTracking()
-                .OrderByDescending(x => x.CreatedAt)
+                .OrderBy(x => x.IsSold)
+                .ThenByDescending(x => x.CreatedAt)
                 .Take(take)
                 .Select(x => new ListingCardViewModel
                 {
@@ -49,6 +52,7 @@ namespace ETSU_Marketplace.Controllers
                     ShortDescription = x.Description,
                     Price = x.Price,
                     CreatedAt = x.CreatedAt,
+                    IsSold = x.IsSold,
                     ListingType = "Lease",
                     CategoryLabel = "Lease",
                     ConditionLabel = null,
@@ -73,30 +77,47 @@ namespace ETSU_Marketplace.Controllers
 
             const int take = 200;
 
-            var items = _db.ItemListings.AsNoTracking().OrderByDescending(x => x.CreatedAt).Take(take).Select(x => new ListingCardViewModel
-            {
-                Id = x.Id,
-                Title = x.Title,
-                ShortDescription = x.Description,
-                Price = x.Price,
-                CreatedAt = x.CreatedAt,
-                ListingType = "Item",
-                CategoryLabel = x.Category.ToString(),
-                ConditionLabel = x.Condition.ToString(),
-                DetailsUrl = $"/Listings/Items/Details/{x.Id}?type=Item"
-            }).ToList();
+            var items = _db.ItemListings
+                .Include(x => x.Images)
+                .AsNoTracking()
+                .OrderBy(x => x.IsSold)
+                .ThenByDescending(x => x.CreatedAt)
+                .Take(take)
+                .Select(x => new ListingCardViewModel
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    ShortDescription = x.Description,
+                    Price = x.Price,
+                    CreatedAt = x.CreatedAt,
+                    IsSold = x.IsSold,
+                    ListingType = "Item",
+                    CategoryLabel = x.Category.ToString(),
+                    ConditionLabel = x.Condition.ToString(),
+                    DetailsUrl = $"/Listings/Items/Details/{x.Id}?type=Item",
+                    ImageUrls = x.Images.Select(i => i.Path).ToList()
+                })
+                .ToList();
 
-            var leases = _db.LeaseListings.AsNoTracking().OrderByDescending(x => x.CreatedAt).Take(take).Select(x => new ListingCardViewModel
-            {
-                Id = x.Id,
-                Title = x.Title,
-                ShortDescription = x.Description,
-                Price = x.Price,
-                CreatedAt = x.CreatedAt,
-                ListingType = "Lease",
-                ImageUrls = x.Images.Select(i => i.Path).ToList(),
-                DetailsUrl = $"/Listings/Leases/Details/{x.Id}?type=Lease"
-            }).ToList();
+            var leases = _db.LeaseListings
+                .Include(x => x.Images)
+                .AsNoTracking()
+                .OrderBy(x => x.IsSold)
+                .ThenByDescending(x => x.CreatedAt)
+                .Take(take)
+                .Select(x => new ListingCardViewModel
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    ShortDescription = x.Description,
+                    Price = x.Price,
+                    CreatedAt = x.CreatedAt,
+                    IsSold = x.IsSold,
+                    ListingType = "Lease",
+                    ImageUrls = x.Images.Select(i => i.Path).ToList(),
+                    DetailsUrl = $"/Listings/Leases/Details/{x.Id}?type=Lease"
+                })
+                .ToList();
 
             category = string.IsNullOrWhiteSpace(category) ? null : category.Trim();
             condition = string.IsNullOrWhiteSpace(condition) ? null : condition.Trim();
@@ -126,16 +147,16 @@ namespace ETSU_Marketplace.Controllers
 
             items = sort switch
             {
-                "price_asc" => items.OrderBy(x => x.Price).ToList(),
-                "price_desc" => items.OrderByDescending(x => x.Price).ToList(),
-                _ => items.OrderByDescending(x => x.CreatedAt).ToList()
+                "price_asc" => items.OrderBy(x => x.IsSold).ThenBy(x => x.Price).ToList(),
+                "price_desc" => items.OrderBy(x => x.IsSold).ThenByDescending(x => x.Price).ToList(),
+                _ => items.OrderBy(x => x.IsSold).ThenByDescending(x => x.CreatedAt).ToList()
             };
 
             leases = sort switch
             {
-                "price_asc" => leases.OrderBy(x => x.Price).ToList(),
-                "price_desc" => leases.OrderByDescending(x => x.Price).ToList(),
-                _ => leases.OrderByDescending(x => x.CreatedAt).ToList()
+                "price_asc" => leases.OrderBy(x => x.IsSold).ThenBy(x => x.Price).ToList(),
+                "price_desc" => leases.OrderBy(x => x.IsSold).ThenByDescending(x => x.Price).ToList(),
+                _ => leases.OrderBy(x => x.IsSold).ThenByDescending(x => x.CreatedAt).ToList()
             };
 
             ViewBag.SearchQuery = q;

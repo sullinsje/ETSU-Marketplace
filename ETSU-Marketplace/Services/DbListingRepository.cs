@@ -34,7 +34,6 @@ public class DbListingRepository<T> : IListingRepository<T> where T : Listing
             foreach (var file in images)
             {
                 string path = await _fss.ProcessImageUpload(file);
-
                 newListing.Images.Add(new Image { Path = path });
             }
         }
@@ -53,7 +52,10 @@ public class DbListingRepository<T> : IListingRepository<T> where T : Listing
             {
                 foreach (var img in listingToDelete.Images)
                 {
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", img.Path.TrimStart('/'));
+                    var filePath = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot",
+                        img.Path.TrimStart('/'));
 
                     if (File.Exists(filePath))
                     {
@@ -61,6 +63,7 @@ public class DbListingRepository<T> : IListingRepository<T> where T : Listing
                     }
                 }
             }
+
             _db.Set<T>().Remove(listingToDelete);
             await _db.SaveChangesAsync();
         }
@@ -71,6 +74,9 @@ public class DbListingRepository<T> : IListingRepository<T> where T : Listing
         return await _db.Set<T>()
             .Include(l => l.Images)
             .Include(l => l.User)
+                .ThenInclude(u => u!.Avatar)
+            .OrderBy(l => l.IsSold)
+            .ThenByDescending(l => l.CreatedAt)
             .ToListAsync();
     }
 
@@ -88,9 +94,21 @@ public class DbListingRepository<T> : IListingRepository<T> where T : Listing
         return await _db.Set<T>()
             .Include(l => l.Images)
             .Include(l => l.User)
+                .ThenInclude(u => u!.Avatar)
             .Where(l => l.UserId == userId)
-            .OrderByDescending(l => l.CreatedAt)
+            .OrderBy(l => l.IsSold)
+            .ThenByDescending(l => l.CreatedAt)
             .ToListAsync();
+    }
+
+    public virtual async Task ToggleSoldStatusAsync(int id)
+    {
+        var existing = await _db.Set<T>().FirstOrDefaultAsync(l => l.Id == id);
+
+        if (existing == null) return;
+
+        existing.IsSold = !existing.IsSold;
+        await _db.SaveChangesAsync();
     }
 
     public virtual async Task UpdateAsync(int id, T updatedListing, List<IFormFile> newImages)
@@ -104,6 +122,7 @@ public class DbListingRepository<T> : IListingRepository<T> where T : Listing
         existing.Title = updatedListing.Title;
         existing.Description = updatedListing.Description;
         existing.Price = updatedListing.Price;
+        existing.IsSold = updatedListing.IsSold;
 
         if (newImages != null && newImages.Any())
         {
@@ -121,5 +140,7 @@ public class DbListingRepository<T> : IListingRepository<T> where T : Listing
                 existing.Images.Add(new Image { Path = dbPath });
             }
         }
+
+        await _db.SaveChangesAsync();
     }
 }

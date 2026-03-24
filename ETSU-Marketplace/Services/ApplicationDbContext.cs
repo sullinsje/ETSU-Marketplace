@@ -10,43 +10,84 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     }
 
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
+    public DbSet<Conversation> Conversations => Set<Conversation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        base.OnModelCreating(modelBuilder);
-
-        // --- Listing Configuration ---
         modelBuilder.Entity<Listing>(entity =>
         {
-            // Relationship: Listing -> Images (Defined once here)
             entity.HasMany(l => l.Images)
                 .WithOne(i => i.Listing)
                 .HasForeignKey(i => i.ListingId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Inheritance: TPH Discriminator
             entity.HasDiscriminator<string>("ListingType")
                 .HasValue<ItemListing>("ITEM")
                 .HasValue<LeaseListing>("LEASE");
         });
 
-        // --- ApplicationUser Configuration ---
         modelBuilder.Entity<ApplicationUser>()
             .HasOne(u => u.Avatar)
-            .WithOne(i => i.User) // Explicitly link to the User property in Image.cs
+            .WithOne(i => i.User)
             .HasForeignKey<ApplicationUser>(u => u.AvatarId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        modelBuilder.Entity<FavoriteListing>(entity =>
+        {
+            entity.HasOne(f => f.User)
+                .WithMany(u => u.FavoriteListings)
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(f => f.Listing)
+                .WithMany()
+                .HasForeignKey(f => f.ListingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(f => new { f.UserId, f.ListingId })
+                .IsUnique();
+        });
+
+        modelBuilder.Entity<Conversation>(entity =>
+        {
+            entity.HasOne(c => c.Listing)
+                .WithMany()
+                .HasForeignKey(c => c.ListingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(c => c.Seller)
+                .WithMany(u => u.SellerConversations)
+                .HasForeignKey(c => c.SellerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(c => c.Buyer)
+                .WithMany(u => u.BuyerConversations)
+                .HasForeignKey(c => c.BuyerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(c => new { c.ListingId, c.BuyerId })
+                .IsUnique();
+        });
+
+        modelBuilder.Entity<ChatMessage>(entity =>
+        {
+            entity.HasOne(m => m.Conversation)
+                .WithMany(c => c.Messages)
+                .HasForeignKey(m => m.ConversationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(m => m.Sender)
+                .WithMany(u => u.SentMessages)
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
     }
 
-    // Tables for Item and Lease Listings (for specific queries in Services)
     public DbSet<ItemListing> ItemListings => Set<ItemListing>();
     public DbSet<LeaseListing> LeaseListings => Set<LeaseListing>();
-
-    // Main Listings table (has a DISCRIMINATOR in DB that says which type of listing it is)
     public DbSet<Listing> Listings => Set<Listing>();
     public DbSet<Image> Images => Set<Image>();
-
+    public DbSet<FavoriteListing> FavoriteListings => Set<FavoriteListing>();
 }
