@@ -39,7 +39,8 @@ public abstract class BaseListingsController<TEntity, TRepository> : Controller
             ImageUrls = entity.Images.Select(i => i.Path).ToList(),
             
             Poster = $"{entity.User!.FirstName} {entity.User.LastName}",
-            PosterAvatar = entity.User.Avatar.Path
+            PosterAvatar = entity.User.Avatar.Path,
+            PosterId = entity.User.Id
         };
     }
 }

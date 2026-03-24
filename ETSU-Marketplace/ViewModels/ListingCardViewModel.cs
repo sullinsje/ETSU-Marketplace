@@ -23,6 +23,7 @@ namespace ETSU_Marketplace.ViewModels
         public string DetailsUrl { get; set; } = "";    // link to details page
         public string Poster {get; set; } = "";
         public string PosterAvatar  {get; set; } = "";
+        public string PosterId {get; set; } = "";
         
     }
 }

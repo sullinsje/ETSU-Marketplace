@@ -27,4 +27,13 @@ public class DbUserRepository : IUserRepository
             .FirstOrDefaultAsync(u => u.Id == userId);
     }
 
+    public async Task<ApplicationUser?> ReadProfileAsync(string userId)
+    {
+        return await _db.Users
+            .Include(u => u.Avatar)
+            .Include(u => u.Listings)
+                .ThenInclude(l => l.Images)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+    }
+
 }

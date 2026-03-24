@@ -1,0 +1,78 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using ETSU_Marketplace.Models
+@inject UserManager<ApplicationUser> UserManager
+@model ETSU_Marketplace.Models.ApplicationUser
+@{
+    ViewData["Title"] = $"{Model.UserName}'s Profile";
+}
+
+<div class="listing-details-page">
+    <a class="back-link" href="javascript:void(0);" onclick="history.back();">
+        ← Back to Marketplace
+    </a>
+
+    <div class="listing-details-hero">
+        <div class="listing-details-card">
+            <div class="listing-details-image">
+                @if (!string.IsNullOrWhiteSpace(Model.Avatar?.Path))
+                {
+                    <img src="@Model.Avatar.Path" alt="User Avatar" />
+                }
+                else
+                {
+                    <img src="/images/default-avatar.jpg" alt="Default Avatar" />
+                }
+            </div>
+            <div class="listing-details-body">
+                <h1 class="listing-details-title">@Model.FirstName @Model.LastName</h1>
+                <p class="listing-details-subtitle">@@@Model.UserName</p>
+                
+                @if (!string.IsNullOrWhiteSpace(Model.Bio))
+                {
+                    <div class="listing-details-meta">
+                        <div class="meta-label">About</div>
+                        <p>@Model.Bio</p>
+                    </div>
+                }
+
+                <div class="listing-details-price-row">
+                    <span class="chip">@Model.Listings.Count Listings</span>
+                    <span class="badge">Seller</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="user-listings-content">
+            <h2 class="latest-title" style="margin-bottom: 20px;">Active Listings</h2>
+    
+            @if (Model.Listings != null && Model.Listings.Any())
+            {
+                <div class="listings-row">
+                    @foreach (var listing in Model.Listings)
+                    {
+                        // Map the Entity to the ViewModel the partial expects
+                        var cardVm = new ETSU_Marketplace.ViewModels.ListingCardViewModel
+                        {
+                            Id = listing.Id,
+                            Title = listing.Title,
+                            ShortDescription = listing.Description,
+                            Price = listing.Price,
+                            CreatedAt = listing.CreatedAt,
+                            ImageUrls = listing.Images.Select(i => i.Path).ToList(),
+                            ListingType = listing is ItemListing ? "Item" : "Lease",
+                            ShowOwnerActions = false
+                        };
+
+                        <partial name="_ListingCard" model="cardVm" />
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <p>This student hasn't posted any items yet.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
