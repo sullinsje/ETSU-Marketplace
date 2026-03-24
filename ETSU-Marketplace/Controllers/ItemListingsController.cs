@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using ETSU_Marketplace.Services;
 using Microsoft.AspNetCore.Identity;
 using ETSU_Marketplace.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ETSU_Marketplace.Controllers
 {
@@ -11,8 +12,16 @@ namespace ETSU_Marketplace.Controllers
     [Route("Listings/Items/")]
     public class ItemListingsController : BaseListingsController<ItemListing, IItemListingRepository>
     {
-        public ItemListingsController(IItemListingRepository itemRepo, UserManager<ApplicationUser> userManager)
-            : base(itemRepo, userManager) { }
+        private readonly ApplicationDbContext _db;
+
+        public ItemListingsController(
+            IItemListingRepository itemRepo,
+            UserManager<ApplicationUser> userManager,
+            ApplicationDbContext db)
+            : base(itemRepo, userManager)
+        {
+            _db = db;
+        }
 
         [HttpGet("")]
         public async Task<IActionResult> Items(
@@ -27,6 +36,14 @@ namespace ETSU_Marketplace.Controllers
             var vms = new List<ListingCardViewModel>();
             var homeIndexVM = new HomeIndexViewModel();
 
+            var currentUserId = CurrentUserId;
+            var favoriteIds = currentUserId == null
+                ? new HashSet<int>()
+                : (await _db.FavoriteListings
+                    .Where(f => f.UserId == currentUserId)
+                    .Select(f => f.ListingId)
+                    .ToListAsync()).ToHashSet();
+
             foreach (var item in items)
             {
                 var vm = MapToCardViewModel(item, false);
@@ -34,6 +51,7 @@ namespace ETSU_Marketplace.Controllers
                 vm.CategoryLabel = item.Category.ToString();
                 vm.ConditionLabel = item.Condition.ToString();
                 vm.DetailsUrl = $"/Listings/Items/Details/{item.Id}?type=Item";
+                vm.IsFavorited = favoriteIds.Contains(item.Id);
                 vms.Add(vm);
             }
 
@@ -115,6 +133,12 @@ namespace ETSU_Marketplace.Controllers
             vm.ConditionLabel = item.Condition.ToString();
             vm.Poster = $"{item.User!.FirstName} {item.User.LastName}";
             vm.PosterAvatar = item.User?.Avatar?.Path ?? "/images/placeholder.png";
+
+            if (CurrentUserId != null)
+            {
+                vm.IsFavorited = await _db.FavoriteListings
+                    .AnyAsync(f => f.UserId == CurrentUserId && f.ListingId == item.Id);
+            }
 
             return View(vm);
         }

@@ -1,6 +1,7 @@
-model ETSU_Marketplace.ViewModels.ListingCardViewModel
+@model ETSU_Marketplace.ViewModels.ListingCardViewModel
 @{
     ViewData["Title"] = "Lease Details";
+    var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
 }
 
 <div class="listing-details-page">
@@ -46,6 +47,15 @@ model ETSU_Marketplace.ViewModels.ListingCardViewModel
             {
                 <span class="chip">@Model.CategoryLabel</span>
             }
+        </div>
+
+        <div style="margin: 12px 0;">
+            <form method="post" action="/Favorites/toggle/@Model.Id">
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                <button type="submit" class="btn @(Model.IsFavorited ? "btn-outline-danger" : "btn-outline-dark")">
+                    @(Model.IsFavorited ? "Remove Favorite" : "Add to Favorites")
+                </button>
+            </form>
         </div>
 
         @if (Model.ShowOwnerActions)

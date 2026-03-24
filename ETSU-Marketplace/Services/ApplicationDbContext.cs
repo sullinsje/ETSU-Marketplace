@@ -15,18 +15,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(modelBuilder);
 
-        base.OnModelCreating(modelBuilder);
-
         // --- Listing Configuration ---
         modelBuilder.Entity<Listing>(entity =>
         {
-            // Relationship: Listing -> Images (Defined once here)
             entity.HasMany(l => l.Images)
                 .WithOne(i => i.Listing)
                 .HasForeignKey(i => i.ListingId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Inheritance: TPH Discriminator
             entity.HasDiscriminator<string>("ListingType")
                 .HasValue<ItemListing>("ITEM")
                 .HasValue<LeaseListing>("LEASE");
@@ -35,18 +31,31 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         // --- ApplicationUser Configuration ---
         modelBuilder.Entity<ApplicationUser>()
             .HasOne(u => u.Avatar)
-            .WithOne(i => i.User) // Explicitly link to the User property in Image.cs
+            .WithOne(i => i.User)
             .HasForeignKey<ApplicationUser>(u => u.AvatarId)
             .OnDelete(DeleteBehavior.SetNull);
 
+        // --- FavoriteListing Configuration ---
+        modelBuilder.Entity<FavoriteListing>(entity =>
+        {
+            entity.HasOne(f => f.User)
+                .WithMany(u => u.FavoriteListings)
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(f => f.Listing)
+                .WithMany()
+                .HasForeignKey(f => f.ListingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(f => new { f.UserId, f.ListingId })
+                .IsUnique();
+        });
     }
 
-    // Tables for Item and Lease Listings (for specific queries in Services)
     public DbSet<ItemListing> ItemListings => Set<ItemListing>();
     public DbSet<LeaseListing> LeaseListings => Set<LeaseListing>();
-
-    // Main Listings table (has a DISCRIMINATOR in DB that says which type of listing it is)
     public DbSet<Listing> Listings => Set<Listing>();
     public DbSet<Image> Images => Set<Image>();
-
+    public DbSet<FavoriteListing> FavoriteListings => Set<FavoriteListing>();
 }
