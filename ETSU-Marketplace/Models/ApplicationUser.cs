@@ -13,6 +13,9 @@ public class ApplicationUser : IdentityUser
     public Image Avatar { get; set; } = new Image { Path = "/images/default-avatar.jpg" };
 
     public ICollection<Listing> Listings { get; set; } = new List<Listing>();
-
     public ICollection<FavoriteListing> FavoriteListings { get; set; } = new List<FavoriteListing>();
+
+    public ICollection<Conversation> SellerConversations { get; set; } = new List<Conversation>();
+    public ICollection<Conversation> BuyerConversations { get; set; } = new List<Conversation>();
+    public ICollection<ChatMessage> SentMessages { get; set; } = new List<ChatMessage>();
 }

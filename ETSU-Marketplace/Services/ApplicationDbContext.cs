@@ -10,12 +10,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     }
 
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
+    public DbSet<Conversation> Conversations => Set<Conversation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // --- Listing Configuration ---
         modelBuilder.Entity<Listing>(entity =>
         {
             entity.HasMany(l => l.Images)
@@ -28,14 +28,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .HasValue<LeaseListing>("LEASE");
         });
 
-        // --- ApplicationUser Configuration ---
         modelBuilder.Entity<ApplicationUser>()
             .HasOne(u => u.Avatar)
             .WithOne(i => i.User)
             .HasForeignKey<ApplicationUser>(u => u.AvatarId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        // --- FavoriteListing Configuration ---
         modelBuilder.Entity<FavoriteListing>(entity =>
         {
             entity.HasOne(f => f.User)
@@ -50,6 +48,40 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
             entity.HasIndex(f => new { f.UserId, f.ListingId })
                 .IsUnique();
+        });
+
+        modelBuilder.Entity<Conversation>(entity =>
+        {
+            entity.HasOne(c => c.Listing)
+                .WithMany()
+                .HasForeignKey(c => c.ListingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(c => c.Seller)
+                .WithMany(u => u.SellerConversations)
+                .HasForeignKey(c => c.SellerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(c => c.Buyer)
+                .WithMany(u => u.BuyerConversations)
+                .HasForeignKey(c => c.BuyerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(c => new { c.ListingId, c.BuyerId })
+                .IsUnique();
+        });
+
+        modelBuilder.Entity<ChatMessage>(entity =>
+        {
+            entity.HasOne(m => m.Conversation)
+                .WithMany(c => c.Messages)
+                .HasForeignKey(m => m.ConversationId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(m => m.Sender)
+                .WithMany(u => u.SentMessages)
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 

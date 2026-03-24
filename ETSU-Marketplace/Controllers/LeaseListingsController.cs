@@ -46,7 +46,7 @@ namespace ETSU_Marketplace.Controllers
 
             if (item == null) return NotFound();
 
-            if (!await IsOwner(item))
+            if (!IsOwner(item))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -62,7 +62,7 @@ namespace ETSU_Marketplace.Controllers
 
             if (item == null) return NotFound();
 
-            if (!await IsOwner(item))
+            if (!IsOwner(item))
             {
                 return RedirectToAction("Index", "Home");
             }
