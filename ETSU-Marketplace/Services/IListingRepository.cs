@@ -1,8 +1,6 @@
-using System;
-
 namespace ETSU_Marketplace.Services;
 
-public interface IListingRepository<T> where T: Listing
+public interface IListingRepository<T> where T : Listing
 {
     Task<ICollection<T>> ReadAllAsync();
     Task<T> CreateAsync(T newListing, List<IFormFile> image, string userId);
@@ -10,4 +8,5 @@ public interface IListingRepository<T> where T: Listing
     Task UpdateAsync(int oldId, T updatedListing, List<IFormFile> images);
     Task DeleteAsync(int id);
     Task<ICollection<T>> ReadUserPostsAsync(string userId);
+    Task ToggleSoldStatusAsync(int id);
 }

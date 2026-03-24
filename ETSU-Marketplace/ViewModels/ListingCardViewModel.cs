@@ -9,6 +9,7 @@ namespace ETSU_Marketplace.ViewModels
         public string ShortDescription { get; set; } = "";
         public decimal Price { get; set; }
         public DateTime CreatedAt { get; set; }
+        public bool IsSold { get; set; }
 
         // Display helpers
         public string ListingType { get; set; } = "";   // "Item" or "Lease"
@@ -20,9 +21,9 @@ namespace ETSU_Marketplace.ViewModels
         public string ImageUrl => (ImageUrls != null && ImageUrls.Any())
             ? ImageUrls[0]
             : "/images/placeholder.png";
-        public string DetailsUrl { get; set; } = "";    // link to details page
-        public string Poster {get; set; } = "";
-        public string PosterAvatar  {get; set; } = "";
-        
+
+        public string DetailsUrl { get; set; } = "";
+        public string Poster { get; set; } = "";
+        public string PosterAvatar { get; set; } = "";
     }
 }

@@ -35,11 +35,11 @@ public abstract class BaseListingsController<TEntity, TRepository> : Controller
             ShortDescription = entity.Description,
             Price = entity.Price,
             CreatedAt = entity.CreatedAt,
+            IsSold = entity.IsSold,
             ShowOwnerActions = showOwnerActions,
             ImageUrls = entity.Images.Select(i => i.Path).ToList(),
-            
-            Poster = $"{entity.User!.FirstName} {entity.User.LastName}",
-            PosterAvatar = entity.User.Avatar.Path
+            Poster = entity.User != null ? $"{entity.User.FirstName} {entity.User.LastName}" : "",
+            PosterAvatar = entity.User?.Avatar?.Path ?? "/images/placeholder.png"
         };
     }
 }

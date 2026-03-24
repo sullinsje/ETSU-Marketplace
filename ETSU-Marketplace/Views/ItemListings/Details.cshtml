@@ -3,17 +3,22 @@
     ViewData["Title"] = "Listing Details";
 }
 
-@* This is just the equivalent of hitting the back button in the browser. Easier 
-   than embedding a return url into the VM *@
 <div class="listing-details-page">
     <a class="back-link" href="javascript:void(0);" onclick="history.back();">
         ← Back
     </a>
 </div>
+
 <div class="listing-details-card">
-    <div class="listing-details-image-wrapper">
+    <div class="listing-details-image-wrapper" style="position:relative;">
         <img src="@(Model.ImageUrl)" alt="@Model.Title" />
+
+        @if (Model.IsSold)
+        {
+            <span class="badge bg-danger position-absolute top-0 end-0 m-2">SOLD</span>
+        }
     </div>
+
     <div class="listing-details-body">
         <h1 class="listing-details-title">@Model.Title</h1>
 
@@ -32,6 +37,11 @@
             <div class="listing-details-price">$@Model.Price</div>
             <span class="badge">@Model.ListingType</span>
 
+            @if (Model.IsSold)
+            {
+                <span class="badge bg-danger">Sold</span>
+            }
+
             @if (!string.IsNullOrWhiteSpace(Model.CategoryLabel))
             {
                 <span class="chip">@Model.CategoryLabel</span>
@@ -43,6 +53,17 @@
             }
         </div>
 
+        @if (Model.ShowOwnerActions)
+        {
+            <div style="margin: 12px 0;">
+                <form method="post" action="/api/ItemAPI/toggle-sold/@Model.Id">
+                    <button type="submit" class="btn @(Model.IsSold ? "btn-outline-success" : "btn-outline-secondary")">
+                        @(Model.IsSold ? "Mark Available" : "Mark Sold")
+                    </button>
+                </form>
+            </div>
+        }
+
         <div class="listing-details-meta">
             <div class="meta-row">
                 <span class="meta-label">Price:</span> <span>$@Model.Price</span>
@@ -52,6 +73,10 @@
             </div>
             <div class="meta-row">
                 <span class="meta-label">Category:</span> <span>@Model.CategoryLabel</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">Status:</span>
+                <span>@(Model.IsSold ? "Sold" : "Available")</span>
             </div>
 
             @if (!string.IsNullOrWhiteSpace(Model.ConditionLabel))
@@ -64,70 +89,80 @@
 
         <div class="details-divider"></div>
 
-        <div class="live-chat-wrap">
-            <h2 class="live-chat-title">Live Chat</h2>
+        @if (Model.IsSold)
+        {
+            <div class="alert alert-warning">
+                This listing has been marked as sold.
+            </div>
+        }
+        else
+        {
+            <div class="live-chat-wrap">
+                <h2 class="live-chat-title">Live Chat</h2>
 
-            <div class="chat-card">
-                <div id="chatLog" class="chat-messages"></div>
+                <div class="chat-card">
+                    <div id="chatLog" class="chat-messages"></div>
 
-                <div class="chat-composer">
-                    <input id="chatInput" class="chat-input" placeholder="Message the seller..." />
-                    <button id="sendBtn" class="chat-send-btn" type="button">Send</button>
+                    <div class="chat-composer">
+                        <input id="chatInput" class="chat-input" placeholder="Message the seller..." />
+                        <button id="sendBtn" class="chat-send-btn" type="button">Send</button>
+                    </div>
                 </div>
             </div>
-        </div>
-
+        }
     </div>
 </div>
-</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+@if (!Model.IsSold)
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
 
-<script>
-    const listingId = @Model.Id;
+    <script>
+        const listingId = @Model.Id;
 
-    function renderMsg(msg) {
-    const div = document.createElement("div");
-    div.className = "chat-line";
+        function renderMsg(msg) {
+            const div = document.createElement("div");
+            div.className = "chat-line";
 
-    const t = msg.sentAtUtc ? new Date(msg.sentAtUtc).toLocaleTimeString() : "";
-    div.textContent = (t ? `[${t}] ` : "") + (msg.sender ?? "User") + ": " + (msg.text ?? "");
+            const t = msg.sentAtUtc ? new Date(msg.sentAtUtc).toLocaleTimeString() : "";
+            div.textContent = (t ? `[${t}] ` : "") + (msg.sender ?? "User") + ": " + (msg.text ?? "");
 
-    const log = document.getElementById("chatLog");
-    log.appendChild(div);
-    log.scrollTop = log.scrollHeight;
-    }
+            const log = document.getElementById("chatLog");
+            log.appendChild(div);
+            log.scrollTop = log.scrollHeight;
+        }
 
-    const connection = new signalR.HubConnectionBuilder()
-    .withUrl("/marketplaceHub")
-    .withAutomaticReconnect()
-    .build();
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/marketplaceHub")
+            .withAutomaticReconnect()
+            .build();
 
-    connection.on("ReceiveListingMessage", (msg) => renderMsg(msg));
+        connection.on("ReceiveListingMessage", (msg) => renderMsg(msg));
 
-    async function start() {
-    try {
-    const history = await fetch(`/chat/listing/${listingId}`).then(r => r.json());
-    history.forEach(renderMsg);
-    } catch (e) { }
+        async function start() {
+            try {
+                const history = await fetch(`/chat/listing/${listingId}`).then(r => r.json());
+                history.forEach(renderMsg);
+            } catch (e) { }
 
-    await connection.start();
-    await connection.invoke("JoinListing", listingId);
-    }
+            await connection.start();
+            await connection.invoke("JoinListing", listingId);
+        }
 
-    document.getElementById("sendBtn").addEventListener("click", async () => {
-    const input = document.getElementById("chatInput");
-    const text = input.value.trim();
-    if (!text) return;
+        document.getElementById("sendBtn").addEventListener("click", async () => {
+            const input = document.getElementById("chatInput");
+            const text = input.value.trim();
+            if (!text) return;
 
-    await connection.invoke("SendListingMessage", listingId, text);
-    input.value = "";
-    input.focus();
-    });
+            await connection.invoke("SendListingMessage", listingId, text);
+            input.value = "";
+            input.focus();
+        });
 
-    document.getElementById("chatInput").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") document.getElementById("sendBtn").click();
-    });
+        document.getElementById("chatInput").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") document.getElementById("sendBtn").click();
+        });
 
-    start();
-</script>
+        start();
+    </script>
+}

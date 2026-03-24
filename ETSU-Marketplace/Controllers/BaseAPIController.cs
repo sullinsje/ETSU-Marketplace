@@ -30,7 +30,6 @@ public abstract class BaseAPIController<TEntity, TRepository> : ControllerBase
         if (userId == null) return Unauthorized();
 
         await _repository.CreateAsync(entity, images, userId);
-
         return LocalRedirect(GetRedirectPath());
     }
 
@@ -43,7 +42,6 @@ public abstract class BaseAPIController<TEntity, TRepository> : ControllerBase
         if (existing.UserId != CurrentUserId) return Forbid();
 
         await _repository.UpdateAsync(entity.Id, entity, images);
-
         return LocalRedirect(GetRedirectPath());
     }
 
@@ -74,9 +72,19 @@ public abstract class BaseAPIController<TEntity, TRepository> : ControllerBase
         return LocalRedirect(GetRedirectPath());
     }
 
-    // Helper to get the current user ID
+    [HttpPost("toggle-sold/{id}")]
+    public virtual async Task<IActionResult> ToggleSoldStatus(int id)
+    {
+        var existing = await _repository.ReadAsync(id);
+
+        if (existing == null) return NotFound();
+        if (existing.UserId != CurrentUserId) return Forbid();
+
+        await _repository.ToggleSoldStatusAsync(id);
+        return LocalRedirect(GetRedirectPath());
+    }
+
     protected string? CurrentUserId => _userManager.GetUserId(User);
 
-    // Abstract method to handle different redirect paths for Items vs Leases
     protected abstract string GetRedirectPath();
 }
