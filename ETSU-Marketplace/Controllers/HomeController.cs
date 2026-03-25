@@ -19,6 +19,7 @@ namespace ETSU_Marketplace.Controllers
 
             var latestItems = _db.ItemListings
                 .Include(x => x.Images)
+                .Include(x => x.ListingCategories)
                 .AsNoTracking()
                 .OrderBy(x => x.IsSold)
                 .ThenByDescending(x => x.CreatedAt)
@@ -32,7 +33,8 @@ namespace ETSU_Marketplace.Controllers
                     CreatedAt = x.CreatedAt,
                     IsSold = x.IsSold,
                     ListingType = "Item",
-                    CategoryLabel = x.Category.ToString(),
+                    CategoryLabel = string.Join(", ",
+                        x.ListingCategories.Select(lc => lc.Category.ToString())),
                     ConditionLabel = x.Condition.ToString(),
                     DetailsUrl = $"/Listings/Items/Details/{x.Id}?type=Item",
                     ImageUrls = x.Images.Select(i => i.Path).ToList(),
@@ -79,6 +81,7 @@ namespace ETSU_Marketplace.Controllers
 
             var items = _db.ItemListings
                 .Include(x => x.Images)
+                .Include(x => x.ListingCategories)
                 .AsNoTracking()
                 .OrderBy(x => x.IsSold)
                 .ThenByDescending(x => x.CreatedAt)
@@ -92,7 +95,8 @@ namespace ETSU_Marketplace.Controllers
                     CreatedAt = x.CreatedAt,
                     IsSold = x.IsSold,
                     ListingType = "Item",
-                    CategoryLabel = x.Category.ToString(),
+                    CategoryLabel = string.Join(", ",
+                        x.ListingCategories.Select(lc => lc.Category.ToString())),
                     ConditionLabel = x.Condition.ToString(),
                     DetailsUrl = $"/Listings/Items/Details/{x.Id}?type=Item",
                     ImageUrls = x.Images.Select(i => i.Path).ToList()

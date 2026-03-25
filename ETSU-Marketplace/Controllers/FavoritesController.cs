@@ -60,8 +60,10 @@ namespace ETSU_Marketplace.Controllers
 
                 if (listing is ItemListing item)
                 {
+                    await _db.Entry(item).Collection(i => i.ListingCategories).LoadAsync();
+
                     card.ListingType = "Item";
-                    card.CategoryLabel = item.Category.ToString();
+                    card.CategoryLabel = string.Join(", ", item.ListingCategories.Select(lc => lc.Category.ToString()));
                     card.ConditionLabel = item.Condition.ToString();
                     card.DetailsUrl = $"/Listings/Items/Details/{item.Id}?type=Item";
                     vm.LatestItemListings.Add(card);

@@ -8,8 +8,24 @@ namespace ETSU_Marketplace.Controllers;
 [Route("api/[controller]")]
 public class LeaseAPIController : BaseAPIController<LeaseListing, ILeaseListingRepository>
 {
-    public LeaseAPIController(ILeaseListingRepository leaseRepo, UserManager<ApplicationUser> userManager) 
-        : base(leaseRepo, userManager) { }
+    public LeaseAPIController(
+        ILeaseListingRepository leaseRepo,
+        UserManager<ApplicationUser> userManager)
+        : base(leaseRepo, userManager)
+    {
+    }
 
     protected override string GetRedirectPath() => "/Listings/Leases/Manage";
+
+    [HttpPost("create")]
+    public async Task<IActionResult> Post([FromForm] LeaseListing entity, List<IFormFile> images)
+    {
+        return await CreateEntity(entity, images);
+    }
+
+    [HttpPost("update")]
+    public async Task<IActionResult> Put([FromForm] LeaseListing entity, List<IFormFile> images)
+    {
+        return await UpdateEntity(entity, images);
+    }
 }

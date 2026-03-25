@@ -2,6 +2,10 @@ using ETSU_Marketplace.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+using ETSU_Marketplace.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -11,6 +15,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
     public DbSet<Conversation> Conversations => Set<Conversation>();
+    public DbSet<ItemListing> ItemListings => Set<ItemListing>();
+    public DbSet<LeaseListing> LeaseListings => Set<LeaseListing>();
+    public DbSet<Listing> Listings => Set<Listing>();
+    public DbSet<Image> Images => Set<Image>();
+    public DbSet<FavoriteListing> FavoriteListings => Set<FavoriteListing>();
+    public DbSet<ListingCategory> ListingCategories => Set<ListingCategory>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,6 +36,19 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             entity.HasDiscriminator<string>("ListingType")
                 .HasValue<ItemListing>("ITEM")
                 .HasValue<LeaseListing>("LEASE");
+        });
+
+        modelBuilder.Entity<ItemListing>(entity =>
+        {
+            entity.HasMany(i => i.ListingCategories)
+                .WithOne(lc => lc.Listing)
+                .HasForeignKey(lc => lc.ListingId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ListingCategory>(entity =>
+        {
+            entity.HasKey(lc => new { lc.ListingId, lc.Category });
         });
 
         modelBuilder.Entity<ApplicationUser>()
@@ -84,10 +107,4 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .OnDelete(DeleteBehavior.Restrict);
         });
     }
-
-    public DbSet<ItemListing> ItemListings => Set<ItemListing>();
-    public DbSet<LeaseListing> LeaseListings => Set<LeaseListing>();
-    public DbSet<Listing> Listings => Set<Listing>();
-    public DbSet<Image> Images => Set<Image>();
-    public DbSet<FavoriteListing> FavoriteListings => Set<FavoriteListing>();
 }

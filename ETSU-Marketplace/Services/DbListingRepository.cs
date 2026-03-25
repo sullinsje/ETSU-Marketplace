@@ -3,21 +3,10 @@ using ETSU_Marketplace.Models;
 
 namespace ETSU_Marketplace.Services;
 
-/// <summary>
-/// This class is a new repository pattern I am implementing (Generic Repository Pattern).
-/// Since Items and Leases require super similar logic and functionality, they will both 
-/// inherit from this generic repository. The only difference between Item and Lease is the update
-/// method, so you have to do a method override to perform the unique code for each update. 
-/// All methods are marked as virtual since this is the base class and the methods may need to be 
-/// overridden.
-/// </summary>
-/// <typeparam name="T">T should be the listing type when you make a repository that inherits from
-/// this base class. For example, a ItemListing repository is just a ListingRepo of type ItemListing
-/// </typeparam>
 public class DbListingRepository<T> : IListingRepository<T> where T : Listing
 {
     protected readonly ApplicationDbContext _db;
-    private readonly IFileStorageService _fss;
+    protected readonly IFileStorageService _fss;
 
     public DbListingRepository(ApplicationDbContext db, IFileStorageService fss)
     {

@@ -23,8 +23,7 @@ public abstract class BaseAPIController<TEntity, TRepository> : ControllerBase
         _userManager = userManager;
     }
 
-    [HttpPost("create")]
-    public virtual async Task<IActionResult> Post([FromForm] TEntity entity, List<IFormFile> images)
+    protected async Task<IActionResult> CreateEntity(TEntity entity, List<IFormFile> images)
     {
         var userId = CurrentUserId;
         if (userId == null) return Unauthorized();
@@ -33,8 +32,7 @@ public abstract class BaseAPIController<TEntity, TRepository> : ControllerBase
         return LocalRedirect(GetRedirectPath());
     }
 
-    [HttpPost("update")]
-    public virtual async Task<IActionResult> Put([FromForm] TEntity entity, List<IFormFile> images)
+    protected async Task<IActionResult> UpdateEntity(TEntity entity, List<IFormFile> images)
     {
         var existing = await _repository.ReadAsync(entity.Id);
 
