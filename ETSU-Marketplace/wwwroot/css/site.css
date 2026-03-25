@@ -885,3 +885,26 @@ body {
     pointer-events: none;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+
+.nav-icon {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.nav-icon:hover {
+    transform: scale(1.08);
+}
+
+.favorites-btn,
+.messages-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    text-decoration: none;
+}

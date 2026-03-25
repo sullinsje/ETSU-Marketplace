@@ -23,6 +23,14 @@
         </div>
 
         <div class="topbar-actions">
+            <a asp-controller="Favorites" asp-action="Index" class="favorites-btn" aria-label="Favorites">
+                <img src="~/images/favoritesicon.png" alt="Favorites" class="nav-icon" />
+            </a>
+
+            <a asp-controller="Messages" asp-action="Index" class="messages-btn" aria-label="Messages">
+                <img src="~/images/messagingicon.png" alt="Messages" class="nav-icon" />
+            </a>
+
             <div class="dropdown">
                 <button class="btn btn-dark fw-bold dropdown-toggle" type="button" id="listingsDropdown"
                         data-bs-toggle="dropdown" aria-expanded="false">
@@ -31,10 +39,9 @@
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="listingsDropdown">
                     <li><a class="dropdown-item" href="/Listings/Items/Manage">Your Items</a></li>
                     <li><a class="dropdown-item" href="/Listings/Leases/Manage">Your Leases</a></li>
-                    <li><a class="dropdown-item" href="/Favorites">Your Favorites</a></li>
-                    <li><a class="dropdown-item" href="/Messages">Messages</a></li>
                 </ul>
             </div>
+
             <div class="navbar-nav ms-auto">
                 <partial name="_LoginPartial" />
             </div>
