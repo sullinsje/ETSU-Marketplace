@@ -15,7 +15,7 @@ public class LeaseAPIController : BaseAPIController<LeaseListing, ILeaseListingR
     {
     }
 
-    protected override string GetRedirectPath() => "/Listings/Leases/Manage";
+    protected override string GetRedirectPath() => "/Manage";
 
     [HttpPost("create")]
     public async Task<IActionResult> Post([FromForm] LeaseListing entity, List<IFormFile> images)
