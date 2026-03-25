@@ -1,12 +1,13 @@
 @model ETSU_Marketplace.ViewModels.ListingCardViewModel
 
 <div class="listing-card @(Model.IsSold ? "listing-card--sold" : "")">
-    <div class="listing-card__image-wrap">
-        <img class="listing-card__image" src="@Model.ImageUrl" alt="@Model.Title" />
+    <div class="listing-card__image" style="position: relative;">
+        <img src="@Model.ImageUrl" alt="@Model.Title" />
 
         @if (Model.IsSold)
         {
-            <span class="badge bg-danger position-absolute top-0 end-0 m-2">SOLD</span>
+            <span class="badge bg-danger position-absolute top-0 end-0 m-1" 
+                  style="font-size: 10px; padding: 2px 6px;">SOLD</span>
         }
     </div>
 
