@@ -12,7 +12,7 @@
 
             <div style="margin-top:20px; border:1.5px solid #dc2626; border-radius:16px; padding:18px;">
                 <h3 style="font-weight:900; margin-bottom:10px;">@Model.Title</h3>
-                <p><strong>Category:</strong> @Model.Category</p>
+                <p><strong>Category:</strong> @string.Join(", ", Model.ListingCategories.Select(c => c.Category.ToString()))</p>
                 <p><strong>Condition:</strong> @Model.Condition</p>
                 <p><strong>Price:</strong> $@Model.Price</p>
                 <p style="color:#64748b; font-size:14px;">

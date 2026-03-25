@@ -38,7 +38,8 @@ namespace ETSU_Marketplace.Controllers
                 // Use BaseListingController method to build VM
                 var vm = MapToCardViewModel(item, false);
                 vm.ListingType = "Item";
-                vm.CategoryLabel = item.Category.ToString();
+                vm.CategoryLabel = string.Join(", ",
+                    item.ListingCategories.Select(lc => lc.Category.ToString()));
                 vm.ConditionLabel = item.Condition.ToString();
                 vm.DetailsUrl = $"/Listings/Items/Details/{item.Id}?type=Item";
                 vms.Add(vm);
@@ -52,7 +53,10 @@ namespace ETSU_Marketplace.Controllers
             if (category != null)
             {
                 vms = vms
-                    .Where(l => string.Equals(l.CategoryLabel, category, StringComparison.OrdinalIgnoreCase))
+                    .Where(l =>
+                        !string.IsNullOrWhiteSpace(l.CategoryLabel) &&
+                        l.CategoryLabel.Split(", ")
+                            .Any(c => string.Equals(c, category, StringComparison.OrdinalIgnoreCase)))
                     .ToList();
             }
 
@@ -129,7 +133,8 @@ namespace ETSU_Marketplace.Controllers
             // Use BaseListingController method to build VM
             var vm = MapToCardViewModel(item, false);
             vm.ListingType = "Item";
-            vm.CategoryLabel = item.Category.ToString();
+            vm.CategoryLabel = string.Join(", ",
+                item.ListingCategories.Select(lc => lc.Category.ToString()));
             vm.ConditionLabel = item.Condition.ToString();
             vm.Poster = $"{item.User!.FirstName} {item.User.LastName}";
             vm.PosterAvatar = item.User.Avatar.Path;
@@ -200,7 +205,8 @@ namespace ETSU_Marketplace.Controllers
                 // owner actions
                 var vm = MapToCardViewModel(item, true);
                 vm.ListingType = "Item";
-                vm.CategoryLabel = item.Category.ToString();
+                vm.CategoryLabel = string.Join(", ",
+                    item.ListingCategories.Select(lc => lc.Category.ToString()));
                 vm.ConditionLabel = item.Condition.ToString();
                 vm.DetailsUrl = $"/Listings/Items/Details/{item.Id}?type=Item";
                 vms.Add(vm);

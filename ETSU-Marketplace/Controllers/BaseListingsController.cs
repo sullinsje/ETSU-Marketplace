@@ -28,7 +28,7 @@ public abstract class BaseListingsController<TEntity, TRepository> : Controller
 
     protected ListingCardViewModel MapToCardViewModel(TEntity entity, bool showOwnerActions = false)
     {
-        return new ListingCardViewModel
+        var vm = new ListingCardViewModel
         {
             Id = entity.Id,
             Title = entity.Title,
@@ -36,10 +36,25 @@ public abstract class BaseListingsController<TEntity, TRepository> : Controller
             Price = entity.Price,
             CreatedAt = entity.CreatedAt,
             ShowOwnerActions = showOwnerActions,
-            ImageUrls = entity.Images.Select(i => i.Path).ToList(),
-            
-            Poster = $"{entity.User!.FirstName} {entity.User.LastName}",
-            PosterAvatar = entity.User.Avatar.Path
+            ImageUrls = entity.Images?.Select(i => i.Path).ToList() ?? new List<string>(),
+            Poster = entity.User != null
+                ? $"{entity.User.FirstName} {entity.User.LastName}".Trim()
+                : "Unknown User",
+            PosterAvatar = entity.User?.Avatar?.Path ?? "/images/placeholder.png"
         };
+
+        if (entity is ItemListing item)
+        {
+            vm.ListingType = "Item";
+            vm.CategoryLabel = string.Join(", ",
+                item.ListingCategories.Select(lc => lc.Category.ToString()));
+            vm.ConditionLabel = item.Condition.ToString();
+        }
+        else if (entity is LeaseListing)
+        {
+            vm.ListingType = "Lease";
+        }
+
+        return vm;
     }
 }
