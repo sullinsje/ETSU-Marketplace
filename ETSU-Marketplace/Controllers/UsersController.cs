@@ -14,7 +14,7 @@ namespace ETSU_Marketplace.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserRepository _userRepo;
 
-        public UsersController(ApplicationDbContext db, 
+        public UsersController(ApplicationDbContext db,
             UserManager<ApplicationUser> userManager,
             IUserRepository userRepo)
         {
@@ -28,6 +28,17 @@ namespace ETSU_Marketplace.Controllers
             var user = await _userRepo.ReadProfileAsync(id);
             if (user == null)
                 return NotFound();
+            return View(user);
+        }
+
+        [Route("Manage")]
+        public async Task<IActionResult> Manage()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (userId == null) return Unauthorized();
+
+            var user = await _userRepo.ReadProfileAsync(userId);
+
             return View(user);
         }
 
