@@ -5,7 +5,6 @@ using ETSU_Marketplace.Services;
 using ETSU_Marketplace.Models;
 using ETSU_Marketplace;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
