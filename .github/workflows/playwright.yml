@@ -18,7 +18,7 @@ jobs:
         dotnet-version: '9.0.x'
 
     - name: Build .NET Project
-      run: dotnet build ./ETSU-Marketplace.csproj
+      run: dotnet build ETSU-Marketplace/ETSU-Marketplace/ETSU-Marketplace.csproj
 
     # 2. Setup Node.js (for Playwright)
     - name: Setup Node.js
