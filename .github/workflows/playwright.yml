@@ -30,14 +30,18 @@ jobs:
         node-version: 20
 
     - name: Install dependencies
+      # Change this path to match where your package.json is
       run: npm ci
+      working-directory: ETSU-Marketplace 
 
-    - name: Install Playwright Browsers (Chromium Only)
+    - name: Install Playwright Browsers
       run: npx playwright install chromium --with-deps
+      working-directory: ETSU-Marketplace
 
     # 3. Run Tests (Playwright will handle starting the .NET app)
     - name: Run Playwright tests
       run: npx playwright test --project=chromium
+      working-directory: ETSU-Marketplace
 
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
