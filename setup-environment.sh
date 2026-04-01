@@ -21,9 +21,16 @@ dotnet --version
 echo "Installing EF Core tools..."
 dotnet tool install --global dotnet-ef --version 9.* || echo "EF tools already installed."
 
-# Add dotnet tools to path
-echo 'export PATH="$PATH:$HOME/.dotnet/tools"' >> ~/.bashrc
-source ~/.bashrc
+# 1. Permanent change: Add to .bashrc for FUTURE logins
+if ! grep -q 'dotnet/tools' ~/.bashrc; then
+    echo 'export PATH="$PATH:$HOME/.dotnet/tools"' >> ~/.bashrc
+fi
+
+# 2. Immediate change: Update the PATH for THIS script execution right now
+export PATH="$PATH:$HOME/.dotnet/tools"
+
+# Verify it works immediately
+dotnet ef --version
 
 # make directory and clone repo into it
 mkdir -p ~/ETSU-Marketplace/
