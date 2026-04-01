@@ -8,7 +8,7 @@ echo "--- Starting ETSU Marketplace Environment Setup ---"
 sudo apt-get update
 
 # Install prerequisites for .NET repository
-sudo add-apt-repository ppa:dotnet/backports
+sudo add-apt-repository -y ppa:dotnet/backports
 sudo apt-get update -y && \
   sudo apt-get install -y dotnet-sdk-9.0 sqlite3 libsqlite3-dev git
 
