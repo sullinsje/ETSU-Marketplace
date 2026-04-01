@@ -21,12 +21,11 @@ dotnet --version
 echo "Installing EF Core tools..."
 dotnet tool install --global dotnet-ef --version 9.* || echo "EF tools already installed."
 
-# 1. Permanent change: Add to .bashrc for FUTURE logins
+# Add to .bashrc for FUTURE logins
 if ! grep -q 'dotnet/tools' ~/.bashrc; then
     echo 'export PATH="$PATH:$HOME/.dotnet/tools"' >> ~/.bashrc
 fi
 
-# 2. Immediate change: Update the PATH for THIS script execution right now
 export PATH="$PATH:$HOME/.dotnet/tools"
 
 # Verify it works immediately
@@ -37,7 +36,7 @@ mkdir -p ~/ETSU-Marketplace/
 git clone https://github.com/sullinsje/ETSU-Marketplace ~/ETSU-Marketplace/
 
 # make listings folder RWX for everyone
-chmod 755 ~/ETSU-Marketplace/ETSU-Marketplace/wwwroot/images/listings
+chmod 777 ~/ETSU-Marketplace/ETSU-Marketplace/wwwroot/images/listings
 
 cd "$HOME/ETSU-Marketplace/ETSU-Marketplace" || exit
 
