@@ -11,7 +11,7 @@ public class ItemAPIController : BaseAPIController<ItemListing, IItemListingRepo
     public ItemAPIController(IItemListingRepository itemRepo, UserManager<ApplicationUser> userManager)
         : base(itemRepo, userManager) { }
 
-    protected override string GetRedirectPath() => "/Listings/Items/Manage";
+    protected override string GetRedirectPath() => "/Manage";
 
     [HttpPost("create")]
     public async Task<IActionResult> Post(

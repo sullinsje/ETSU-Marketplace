@@ -186,32 +186,5 @@ namespace ETSU_Marketplace.Controllers
             return View(item);
         }
 
-        [Route("Manage")]
-        public async Task<IActionResult> Manage()
-        {
-            if (CurrentUserId == null) return Unauthorized();
-
-            var items = await _repository.ReadUserPostsAsync(CurrentUserId);
-            var vms = new List<ListingCardViewModel>();
-            var homeIndexVM = new HomeIndexViewModel();
-
-            foreach (var item in items)
-            {
-                var vm = MapToCardViewModel(item, true);
-                vm.ListingType = "Item";
-                vm.CategoryLabel = string.Join(", ",
-                    item.ListingCategories.Select(lc => lc.Category.ToString()));
-                vm.ConditionLabel = item.Condition.ToString();
-                vm.DetailsUrl = $"/Listings/Items/Details/{item.Id}?type=Item";
-                vms.Add(vm);
-            }
-
-            foreach (var v in vms)
-            {
-                homeIndexVM.LatestItemListings.Add(v);
-            }
-
-            return View(homeIndexVM);
-        }
     }
 }

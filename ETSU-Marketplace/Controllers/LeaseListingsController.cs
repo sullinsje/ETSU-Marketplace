@@ -70,32 +70,6 @@ namespace ETSU_Marketplace.Controllers
             return View(item);
         }
 
-        [Route("Manage")]
-        public async Task<IActionResult> Manage()
-        {
-            var userId = _userManager.GetUserId(User);
-            if (userId == null) return Unauthorized();
-
-            var leases = await _repository.ReadUserPostsAsync(userId);
-            var vms = new List<ListingCardViewModel>();
-            var homeIndexVM = new HomeIndexViewModel();
-
-            foreach (var lease in leases)
-            {
-                var vm = MapToCardViewModel(lease, true);
-                vm.ListingType = "Lease";
-                vm.DetailsUrl = $"/Listings/Leases/Details/{lease.Id}?type=Lease";
-                vms.Add(vm);
-            }
-
-            foreach (var v in vms)
-            {
-                homeIndexVM.LatestLeaseListings.Add(v);
-            }
-
-            return View(homeIndexVM);
-        }
-
         [HttpGet("")]
         public async Task<IActionResult> Leases(decimal? minPrice, decimal? maxPrice, string? sort, string? q)
         {
