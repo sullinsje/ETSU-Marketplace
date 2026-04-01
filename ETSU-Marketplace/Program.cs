@@ -26,6 +26,7 @@ builder.Services.AddScoped<IItemListingRepository, DbItemListingRepository>();
 builder.Services.AddScoped<ILeaseListingRepository, DbLeaseListingRepository>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IUserRepository, DbUserRepository>();
+builder.Services.AddHttpClient<GitHubIssueService>();
 builder.Services.AddSignalR();
 
 
