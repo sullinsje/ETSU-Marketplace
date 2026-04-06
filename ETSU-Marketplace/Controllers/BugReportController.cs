@@ -30,6 +30,8 @@ namespace ETSU_Marketplace.Controllers
 
             if (success)
             {
+                MarketplaceMetrics.BugReportsSubmitted.Inc();
+
                 TempData["Success"] = "Bug report submitted to GitHub Issues.";
                 return RedirectToAction(nameof(Index));
             }
