@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Prometheus;
 
 namespace ETSU_Marketplace.Controllers;
 
@@ -28,7 +29,12 @@ public abstract class BaseAPIController<TEntity, TRepository> : ControllerBase
         var userId = CurrentUserId;
         if (userId == null) return Unauthorized();
 
+        using var timer = MarketplaceMetrics.ListingCreateDuration.NewTimer();
+
         await _repository.CreateAsync(entity, images, userId);
+
+        MarketplaceMetrics.ListingsCreated.Inc();
+
         return LocalRedirect(GetRedirectPath());
     }
 

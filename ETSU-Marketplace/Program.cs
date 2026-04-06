@@ -4,6 +4,7 @@ using ETSU_Marketplace.Hubs;
 using ETSU_Marketplace.Services;
 using ETSU_Marketplace.Models;
 using ETSU_Marketplace;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHealthChecks().ForwardToPrometheus();
 builder.Services.AddScoped<IItemListingRepository, DbItemListingRepository>();
 builder.Services.AddScoped<ILeaseListingRepository, DbLeaseListingRepository>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
@@ -52,10 +54,18 @@ app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseHttpMetrics(options =>
+{
+    options.ReduceStatusCodeCardinality();
+});
+
 app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapMetrics();
+app.MapHealthChecks("/healthz");
 
 app.MapStaticAssets();
 
