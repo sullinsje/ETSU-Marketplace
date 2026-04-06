@@ -8,7 +8,7 @@ echo "--- Starting ETSU Marketplace Environment Setup ---"
 sudo apt-get update
 
 # Install prerequisites for .NET repository
-sudo add-apt-repository ppa:dotnet/backports
+sudo add-apt-repository -y ppa:dotnet/backports
 sudo apt-get update -y && \
   sudo apt-get install -y dotnet-sdk-9.0 sqlite3 libsqlite3-dev git
 
@@ -21,16 +21,22 @@ dotnet --version
 echo "Installing EF Core tools..."
 dotnet tool install --global dotnet-ef --version 9.* || echo "EF tools already installed."
 
-# Add dotnet tools to path
-echo 'export PATH="$PATH:$HOME/.dotnet/tools"' >> ~/.bashrc
-source ~/.bashrc
+# Add to .bashrc for FUTURE logins
+if ! grep -q 'dotnet/tools' ~/.bashrc; then
+    echo 'export PATH="$PATH:$HOME/.dotnet/tools"' >> ~/.bashrc
+fi
+
+export PATH="$PATH:$HOME/.dotnet/tools"
+
+# Verify it works immediately
+dotnet ef --version
 
 # make directory and clone repo into it
 mkdir -p ~/ETSU-Marketplace/
 git clone https://github.com/sullinsje/ETSU-Marketplace ~/ETSU-Marketplace/
 
 # make listings folder RWX for everyone
-chmod 755 ~/ETSU-Marketplace/ETSU-Marketplace/wwwroot/images/listings
+chmod 777 ~/ETSU-Marketplace/ETSU-Marketplace/wwwroot/images/listings
 
 cd "$HOME/ETSU-Marketplace/ETSU-Marketplace" || exit
 
