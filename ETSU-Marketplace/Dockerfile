@@ -35,12 +35,14 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 COPY --from=build /app .
 
 # Create Data directory and set permissions for the SQLite database
-RUN mkdir -p /app/Data && chown $APP_UID:$APP_UID /app/Data
+RUN mkdir -p /app/Data /app/wwwroot/images/listings
+
+# Apply ownership to everything at once
+RUN chown -R $APP_UID:$APP_UID /app/Data /app/wwwroot/images
 
 # Standard port for ASP.NET Core and Prometheus metrics
 EXPOSE 8080
 
-RUN chown -R $APP_UID:$APP_UID /app/Data /app/wwwroot/images
 # Switch to the non-privileged user for security
 USER $APP_UID
 
