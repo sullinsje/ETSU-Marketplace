@@ -126,6 +126,26 @@ $RECYCLE.BIN/
 *.sqlite
 *.sqlite3
 
-# Keep this folder in git if you want the folder structure preserved
-!ETSU-Marketplace/wwwroot/images/listings/
+# Ignore actual uploaded listing images
+ETSU-Marketplace/wwwroot/images/listings/*
 !ETSU-Marketplace/wwwroot/images/listings/.gitkeep
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# Monitoring
+prometheus/data/
+grafana/data/
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Ensure local SQLite DBs stay out (redundancy check)
+*.db-shm
+*.db-wal
