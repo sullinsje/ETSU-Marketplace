@@ -2,7 +2,7 @@
 
 # 1. Build Stage
 # Using the .NET 10.0 SDK on Alpine for a lightweight, fast build environment
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-preview-alpine AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
 ARG TARGETARCH
 WORKDIR /source
 
@@ -24,7 +24,7 @@ RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
 
 # 2. Final Runtime Stage
 # Minimal runtime image for .NET 10.0
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview-alpine AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final
 WORKDIR /app
 
 # Install ICU libraries (Required for SQLite & Globalization on Alpine)
