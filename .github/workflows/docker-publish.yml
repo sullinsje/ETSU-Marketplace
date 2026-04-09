@@ -30,11 +30,16 @@ jobs:
 
       # Use the exact same build logic that works in Playwright
       - name: Build and Tag Image
+        # This bash trick converts the repository name to lowercase
         run: |
-          docker build -t ghcr.io/${{ github.repository }}:latest ./ETSU-Marketplace
-          docker tag ghcr.io/${{ github.repository }}:latest ghcr.io/${{ github.repository }}:main
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker build -t ghcr.io/${REPO_LOWER}:latest ./ETSU-Marketplace
+          docker tag ghcr.io/${REPO_LOWER}:latest ghcr.io/${REPO_LOWER}:main
+          
+          # Store it in an env var so the next step can see it too
+          echo "REPO_LOWER=${REPO_LOWER}" >> $GITHUB_ENV
 
       - name: Push Image to GHCR
         run: |
-          docker push ghcr.io/${{ github.repository }}:latest
-          docker push ghcr.io/${{ github.repository }}:main
+          docker push ghcr.io/${{ env.REPO_LOWER }}:latest
+          docker push ghcr.io/${{ env.REPO_LOWER }}:main      - name: Push Image to GHCR
