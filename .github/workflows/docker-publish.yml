@@ -21,7 +21,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Log in to GitHub Container Registry
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -29,21 +28,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Extract metadata (tags, labels) for Docker
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      # Use the exact same build logic that works in Playwright
+      - name: Build and Tag Image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}:latest ./ETSU-Marketplace
+          docker tag ghcr.io/${{ github.repository }}:latest ghcr.io/${{ github.repository }}:main
 
-      # Build and push Docker image
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          # Point this to the folder containing your source code and Dockerfile
-          context: ./ETSU-Marketplace
-          # Explicitly tell it where the Dockerfile is located
-          file: ./ETSU-Marketplace/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      - name: Push Image to GHCR
+        run: |
+          docker push ghcr.io/${{ github.repository }}:latest
+          docker push ghcr.io/${{ github.repository }}:main
