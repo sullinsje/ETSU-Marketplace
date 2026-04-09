@@ -42,4 +42,4 @@ jobs:
       - name: Push Image to GHCR
         run: |
           docker push ghcr.io/${{ env.REPO_LOWER }}:latest
-          docker push ghcr.io/${{ env.REPO_LOWER }}:main      - name: Push Image to GHCR
+          docker push ghcr.io/${{ env.REPO_LOWER }}:main
