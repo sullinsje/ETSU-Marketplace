@@ -11,19 +11,18 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # 1. Setup .NET (for your Marketplace app)
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+    # 1. Build and Start the App using Docker
+    - name: Build and Start Container
+      run: |
+        docker compose build
+        docker compose up -d
+      working-directory: ETSU-Marketplace
 
-    - name: Debug Folder Structure
-      run: ls -R
+    # 2. DevSecOps: Simple Container Scan (Optional but recommended)
+    - name: Check Container Status
+      run: docker ps
 
-    - name: Build .NET Project
-      run: dotnet build ETSU-Marketplace/ETSU-Marketplace.csproj
-
-    # 2. Setup Node.js (for Playwright)
+    # 3. Setup Node.js (for Playwright)
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -38,14 +37,20 @@ jobs:
       run: npx playwright install chromium --with-deps
       working-directory: ETSU-Marketplace
 
-    # 3. Run Tests (Playwright will handle starting the .NET app)
+    # 4. Run Tests
     - name: Run Playwright tests
       run: npx playwright test --project=chromium
+      working-directory: ETSU-Marketplace
+
+    # 5. Cleanup
+    - name: Stop Containers
+      if: always()
+      run: docker compose down
       working-directory: ETSU-Marketplace
 
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: playwright-report
-        path: playwright-report/
+        path: ETSU-Marketplace/playwright-report/
         retention-days: 30

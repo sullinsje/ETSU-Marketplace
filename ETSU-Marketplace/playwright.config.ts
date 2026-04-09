@@ -25,7 +25,7 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL: 'http://localhost:5269',
+    baseURL: 'http://localhost:8080',
     trace: 'on-first-retry',
   },
 
@@ -75,10 +75,10 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'dotnet run --project ./ETSU-Marketplace.csproj', // Path to your project file
+  webServer: process.env.CI ? undefined : {
+    command: 'dotnet run --project ./ETSU-Marketplace.csproj',
     url: 'http://localhost:5269',
-    reuseExistingServer: !process.env.CI,
-    timeout: 30 * 1000, // Give it 2 minutes to start up
+    reuseExistingServer: true,
+    timeout: 60 * 1000,
   },
 });
