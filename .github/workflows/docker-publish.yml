@@ -40,7 +40,10 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          # Point this to the folder containing your source code and Dockerfile
+          context: ./ETSU-Marketplace
+          # Explicitly tell it where the Dockerfile is located
+          file: ./ETSU-Marketplace/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
