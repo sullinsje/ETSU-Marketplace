@@ -5,6 +5,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+/// <summary>
+/// The favorites controller manages a user's favorite listings by
+/// displaying saved listings and allowing users to add or remove
+/// listings from their favorites.
+/// </summary>
+
 namespace ETSU_Marketplace.Controllers
 {
     [Authorize]

@@ -1,6 +1,12 @@
+using ETSU_Marketplace.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ETSU_Marketplace.ViewModels;
+
+/// <summary>
+/// The home controller handles the home page and search results
+/// by loading the latest item and lease listings and applying 
+/// search, filtering, and sorting options.
+/// </summary>
 
 namespace ETSU_Marketplace.Controllers
 {
