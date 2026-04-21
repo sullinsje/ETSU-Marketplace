@@ -1,10 +1,16 @@
-using Microsoft.AspNetCore.Mvc;
+using ETSU_Marketplace.Models;
+using ETSU_Marketplace.Services;
 using ETSU_Marketplace.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using ETSU_Marketplace.Services;
 using Microsoft.AspNetCore.Identity;
-using ETSU_Marketplace.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
+/// <summary>
+/// The item listing controller handles displaying searchable and
+/// filterable item listings, viewing item details, and creating,
+/// editing, and deleting views for authorized listing owners.
+/// </summary>
 
 namespace ETSU_Marketplace.Controllers
 {

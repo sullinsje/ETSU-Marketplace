@@ -6,6 +6,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Prometheus;
 
+/// <summary>
+/// The base API controller handles the CRUD operations and shared functionality
+/// for all listings. It handles the creation, retrieval, updating, deletion,
+/// and status management of listings while also handling authorization and
+/// ownership and integrates metrics tracking for monitoring listing activity.
+/// </summary>
+
 namespace ETSU_Marketplace.Controllers;
 
 [EnableCors]

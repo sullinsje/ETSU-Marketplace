@@ -3,6 +3,12 @@ using ETSU_Marketplace.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
+/// <summary>
+/// The lease API controller handles creating and updating lease
+/// listings using the CRUD functionality provided by the base
+/// API controller.
+/// </summary>
+
 namespace ETSU_Marketplace.Controllers;
 
 [Route("api/[controller]")]

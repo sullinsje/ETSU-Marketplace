@@ -1,10 +1,16 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ETSU_Marketplace.ViewModels;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Identity;
 using ETSU_Marketplace.Models;
 using ETSU_Marketplace.Services;
+using ETSU_Marketplace.ViewModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+
+/// <summary>
+/// The users controller handles user profile pages, allowing users
+/// to view public user details and displaying the currently authenticated
+/// user's profile management page.
+/// </summary>
 
 namespace ETSU_Marketplace.Controllers
 {
