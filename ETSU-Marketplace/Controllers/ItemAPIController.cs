@@ -3,6 +3,12 @@ using ETSU_Marketplace.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
+/// <summary>
+/// The item API controller handles creation, updating, and assigning
+/// selected categories for item listings before passing the request
+/// to the base API controller.
+/// </summary>
+
 namespace ETSU_Marketplace.Controllers;
 
 [Route("api/[controller]")]

@@ -4,6 +4,12 @@ using ETSU_Marketplace.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
+/// <summary>
+/// The base listings controller handles the shared functionality for all the listing
+/// controllers, including access to the current user, ownership checks, and mapping
+/// listing entities to listing card view models for display.
+/// </summary>
+
 namespace ETSU_Marketplace.Controllers;
 
 public abstract class BaseListingsController<TEntity, TRepository> : Controller

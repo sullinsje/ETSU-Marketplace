@@ -5,6 +5,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+/// <summary>
+/// The messages controller manages user messaging features like
+/// listing conversations, viewing conversation details, starting
+/// new conversations, and retrieving message history.
+/// </summary>
+
 namespace ETSU_Marketplace.Controllers
 {
     [Authorize]

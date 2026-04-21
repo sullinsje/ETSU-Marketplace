@@ -1,9 +1,16 @@
-using Microsoft.AspNetCore.Mvc;
+using ETSU_Marketplace.Models;
+using ETSU_Marketplace.Services;
 using ETSU_Marketplace.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using ETSU_Marketplace.Services;
 using Microsoft.AspNetCore.Identity;
-using ETSU_Marketplace.Models;
+using Microsoft.AspNetCore.Mvc;
+
+/// <summary>
+/// The lease listing controller handles the lease listing
+/// pages for viewing the details of a lease and creating,
+/// editing, deleting, and displaying searchable and filterable
+/// lease listings.
+/// </summary>
 
 namespace ETSU_Marketplace.Controllers
 {
