@@ -1,5 +1,8 @@
 using Prometheus;
 
+/// <summary>
+/// contains counters and histograms for metrics
+/// </summary>
 public static class MarketplaceMetrics
 {
     public static readonly Counter ListingsCreated = Metrics.CreateCounter(

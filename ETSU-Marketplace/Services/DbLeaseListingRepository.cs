@@ -1,11 +1,11 @@
-using ETSU_Marketplace.Models;
-using Microsoft.EntityFrameworkCore;
-
 namespace ETSU_Marketplace.Services;
 
 /// <summary>
+/// Contains the necessary methods for CRUD operations regarding LeaseListings
+/// NOTE:
 /// This class now inherits from the base ListingRepository, only overriding the Update method
 /// because of its unique changes in this class
+/// See DbListingRepository.cs for general implementation
 /// </summary>
 public class DbLeaseListingRepository : DbListingRepository<LeaseListing>, ILeaseListingRepository
 {

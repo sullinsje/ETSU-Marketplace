@@ -5,6 +5,9 @@ using ETSU_Marketplace.Models;
 
 namespace ETSU_Marketplace.Services
 {
+    /// <summary>
+    /// Handles the submission of GitHub Issues; pulled from BugReport html form
+    /// </summary>
     public class GitHubIssueService
     {
         private readonly HttpClient _httpClient;

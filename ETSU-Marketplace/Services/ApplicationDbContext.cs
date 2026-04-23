@@ -2,6 +2,10 @@ using ETSU_Marketplace.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+/// <summary>
+/// Responsible for mapping C# objects to database tables. EF Core does most of the heavy lifting,
+/// but we do have some manual table creations.
+/// </summary>
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

@@ -1,9 +1,11 @@
-using System;
 using ETSU_Marketplace.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ETSU_Marketplace.Services;
 
+/// <summary>
+/// Contains the methods required for user customization (primarily just Reads)
+/// </summary>
 public class DbUserRepository : IUserRepository
 {
     private readonly ApplicationDbContext _db;
