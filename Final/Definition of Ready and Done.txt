@@ -1,0 +1,15 @@
+Definition of Ready and Done
+
+Definition of Ready
+A user story or task is considered ready when:
+The requirement is clearly written and understandable
+Acceptance criteria are defined and testable
+Any dependencies are identified
+The task is small enough to be completed within a sprint
+
+Definition of Done
+A user story or task is considered done when:
+The implementation is complete and functions as expected
+All acceptance criteria are met
+The application runs without errors
+Changes have been committed and pushed to the repository
