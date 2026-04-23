@@ -1,5 +1,10 @@
 namespace ETSU_Marketplace.Services;
 
+/// <summary>
+/// Defines a generic set of CRUD operations, user-specific queries, and
+/// status management for listing entities.
+/// </summary>
+
 public interface IListingRepository<T> where T : Listing
 {
     Task<ICollection<T>> ReadAllAsync();
