@@ -1,7 +1,9 @@
 namespace ETSU_Marketplace.Services;
+
 /// <summary>
-/// Defines what methods the FSS will have
+/// Provides functionality for handling file storage operations.
 /// </summary>
+
 public interface IFileStorageService
 {
     public Task<string> ProcessImageUpload(IFormFile file);
