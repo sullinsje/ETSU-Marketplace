@@ -1,5 +1,8 @@
 namespace ETSU_Marketplace.Services;
 
+/// <summary>
+/// Defines the methods the ListingRepository will use  
+/// </summary>
 public interface IListingRepository<T> where T : Listing
 {
     Task<ICollection<T>> ReadAllAsync();

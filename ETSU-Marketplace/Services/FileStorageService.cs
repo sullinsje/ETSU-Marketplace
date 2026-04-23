@@ -1,5 +1,10 @@
 namespace ETSU_Marketplace.Services;
 
+/// <summary>
+/// This service handles the Image uploading functionality for listings and account avatar creation.
+/// It generates GUIDs, saves the file to the host machine, and creates a database entry for its
+/// file path. Handles deletion of files as well
+/// </summary>
 public class FileStorageService : IFileStorageService
 {
 

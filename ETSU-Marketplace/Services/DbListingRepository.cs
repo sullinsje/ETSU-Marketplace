@@ -3,6 +3,15 @@ using ETSU_Marketplace.Models;
 
 namespace ETSU_Marketplace.Services;
 
+/// <summary>
+/// Contains the methods for CRUD operations for listings. These methods are inherited by
+/// the Item and Lease Listing Repositories. The Controllers call the methods in this class,
+/// passing in the corresponding Type T to perform the operation (it will then refer to the dedicated
+/// repository if needed). If specific functionality is
+/// needed (i.e., differences between a Item or Listing object), override the methods as needed.
+/// All methods are virtual for this purpose.
+/// </summary>
+/// <typeparam name="T"> Type of Listing (Item or Lease) </typeparam>
 public class DbListingRepository<T> : IListingRepository<T> where T : Listing
 {
     protected readonly ApplicationDbContext _db;

@@ -2,6 +2,9 @@ using ETSU_Marketplace.Models;
 
 namespace ETSU_Marketplace.Services;
 
+/// <summary>
+/// Defines the methods the ItemListingRepository will use  
+/// </summary>
 public interface IItemListingRepository : IListingRepository<ItemListing>
 {
     // This interface "inherits" other methods
