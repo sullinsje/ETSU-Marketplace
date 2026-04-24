@@ -1,0 +1,8 @@
+DevOps First Way
+The DevOps First Way is implemented through the project's automated building and testing. Changes are pushed through GitHub, then tested with GitHub Actions, and must pass required status checks before being merged into main. Our use of Docker also supports consistent deployment.
+
+DevOps Second Way
+The DevOps Second Way is implemented through our bug report system. Users are able to submit bug reports from the app, and those reports automatically create GitHub Issues, creating a feedback loop from users to the development team.
+
+DevOps Third Way
+We implemented the DevOps Third Way with monitoring and continuous improvement. Prometheus collects the apps' metrics like request counters, listing creation totals, bug report totals, and listing creation duration. Then Grafana visualizes those metrics in a dashboard so the team can see the systems' behavior and make improvements based on the usage data.

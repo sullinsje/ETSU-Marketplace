@@ -1,0 +1,11 @@
+Project Goals
+The goal of the ETSU Marketplace is to provide a safe, university-focused app where students can buy and sell items with other students. We aim to have the app create a trusted environment, reduce the risk of scams, and make it simple for users to browse, post, and manage listings.
+
+	Primary goals:
+		Enable students to create, edit, and manage listings
+		Allow for searching and filtering tools for easier browsing
+		Allow direct communication between buyers and sellers
+		Have a simple and consistent UI
+
+Release Plan
+The project's release was structured around the midterm and midterm 2/final submission, so we had 2 iterations. The first consisted of the core features of user authentication, CRUD operations for listings, searching, filtering, sorting, and image uploads. The second one included the completion of the messaging, favoriting, improving the listing details, adding bug reports, metrics, monitoring, CI pipelines, and the Docker setup.
