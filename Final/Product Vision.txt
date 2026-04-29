@@ -1,0 +1,2 @@
+Product vision
+Our vision for the ETSU Marketplace is to create a secure, campus-only platform where students can confidently buy and sell items within a trusted community. The application focuses on reducing scams, improving accessibility, and simplifying peer-to-peer transactions by restricting access to university users and providing essential marketplace features like listings, search, and messaging.

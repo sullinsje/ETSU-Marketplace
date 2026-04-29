@@ -1,0 +1,2 @@
+Documentation Standards
+Our documentation standards for this project involved using the Midterm and Final folders in our GitHub repository to organize our major project artifacts. The documents have clear headings, consistent formatting, and easily readable text. Within the codebase our documentation consists of XML comments that summarize the functions of the interfaces, controllers, and different services.
